@@ -1,0 +1,466 @@
+<title>Kronika iteracji 1</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F4F6F8;
+    --surface: #FFFFFF;
+    --surface-2: #EAEEF2;
+    --ink: #1A2230;
+    --ink-2: #4A5568;
+    --ink-3: #7B8794;
+    --line: #D6DCE3;
+    --accent: #0E7C72;
+    --accent-ink: #0B5F58;
+    --accent-soft: #D9F0EC;
+    --warn: #B4600A;
+    --warn-soft: #FBE9D3;
+    --ok: #2F7A3E;
+    --ok-soft: #DDF1E0;
+    --planner: #6D4FC2;
+    --backend: #2D5BD1;
+    --frontend: #C2410C;
+    --devops: #2F855A;
+    --qa: #0B7C9E;
+    --review: #5B6B7F;
+    --lead: #1A2230;
+    --code-bg: #1E2530;
+    --code-ink: #E6EBF1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121820;
+      --surface: #1A222D;
+      --surface-2: #232D3A;
+      --ink: #E8EDF3;
+      --ink-2: #B3BDCA;
+      --ink-3: #7F8A98;
+      --line: #2E3946;
+      --accent: #3FB8AB;
+      --accent-ink: #7ED6CB;
+      --accent-soft: #163B38;
+      --warn: #E5A050;
+      --warn-soft: #3D2A12;
+      --ok: #6CC47C;
+      --ok-soft: #173A20;
+      --planner: #A78BFA;
+      --backend: #7C9BF0;
+      --frontend: #F0865A;
+      --devops: #6CC47C;
+      --qa: #58C0E0;
+      --review: #A2B0C2;
+      --lead: #E8EDF3;
+      --code-bg: #0D1117;
+      --code-ink: #DCE3EB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121820;
+    --surface: #1A222D;
+    --surface-2: #232D3A;
+    --ink: #E8EDF3;
+    --ink-2: #B3BDCA;
+    --ink-3: #7F8A98;
+    --line: #2E3946;
+    --accent: #3FB8AB;
+    --accent-ink: #7ED6CB;
+    --accent-soft: #163B38;
+    --warn: #E5A050;
+    --warn-soft: #3D2A12;
+    --ok: #6CC47C;
+    --ok-soft: #173A20;
+    --planner: #A78BFA;
+    --backend: #7C9BF0;
+    --frontend: #F0865A;
+    --devops: #6CC47C;
+    --qa: #58C0E0;
+    --review: #A2B0C2;
+    --lead: #E8EDF3;
+    --code-bg: #0D1117;
+    --code-ink: #DCE3EB;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1, h2, h3 {
+    font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.15;
+  }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  a { color: var(--accent-ink); }
+  code, .mono {
+    font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.92em;
+  }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre {
+    background: var(--code-bg); color: var(--code-ink);
+    padding: 14px 16px; border-radius: 6px; overflow-x: auto;
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.5;
+    margin: 0 0 16px;
+  }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .eyebrow {
+    font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-3); font-weight: 600; margin-bottom: 12px;
+  }
+  .lede { font-size: 18px; color: var(--ink-2); margin-top: 16px; max-width: 62ch; }
+
+  .stats {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+    background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+    margin-top: 32px;
+  }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v {
+    font-family: "Bricolage Grotesque", system-ui, sans-serif;
+    font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1;
+  }
+  .stat .v.accent { color: var(--accent); }
+  .stat .l { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 34px; } }
+
+  /* pipeline */
+  .pipeline {
+    display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 4px 0 8px; margin: 20px 0 8px;
+  }
+  .stage {
+    flex: 1 0 140px; position: relative; padding: 12px 14px;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 6px;
+  }
+  .stage + .stage { margin-left: 22px; }
+  .stage + .stage::before {
+    content: ""; position: absolute; left: -22px; top: 50%; width: 22px; height: 1px; background: var(--ink-3);
+  }
+  .stage .t { font-weight: 600; font-size: 14px; }
+  .stage .d { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+  .stage.gate { border-style: dashed; }
+  .stage.merge { border-color: var(--accent); background: var(--accent-soft); }
+
+  /* chips */
+  .chip {
+    display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 500;
+    padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; white-space: nowrap;
+    color: #fff; line-height: 1.5;
+  }
+  .chip.planner { background: var(--planner); }
+  .chip.backend { background: var(--backend); }
+  .chip.frontend { background: var(--frontend); }
+  .chip.devops { background: var(--devops); }
+  .chip.qa { background: var(--qa); }
+  .chip.review { background: var(--review); }
+  .chip.lead { background: var(--lead); color: var(--bg); }
+
+  .verdict {
+    display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 4px;
+    letter-spacing: 0.04em; text-transform: uppercase;
+  }
+  .verdict.ok { background: var(--ok-soft); color: var(--ok); }
+  .verdict.warn { background: var(--warn-soft); color: var(--warn); }
+
+  /* timeline */
+  .phase { margin-top: 36px; }
+  .phase-head {
+    display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
+    padding-bottom: 8px; border-bottom: 2px solid var(--ink);
+  }
+  .phase-head h3 { margin: 0; }
+  .phase-head .span { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .phase-note { color: var(--ink-2); font-size: 15px; margin: 12px 0 6px; max-width: 70ch; }
+  .events { list-style: none; margin: 0; padding: 0; }
+  .events li {
+    display: grid; grid-template-columns: 72px 92px 1fr; gap: 12px; align-items: baseline;
+    padding: 8px 0; border-bottom: 1px solid var(--line);
+  }
+  .events li:last-child { border-bottom: 0; }
+  .events .time { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .events .msg { font-size: 15px; }
+  .events .msg .hash { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); margin-left: 8px; }
+  .events .msg em { color: var(--ink-2); }
+  @media (max-width: 560px) {
+    .events li { grid-template-columns: 64px 1fr; }
+    .events .msg { grid-column: 1 / -1; padding-left: 0; }
+  }
+
+  /* tables */
+  .tbl-wrap { overflow-x: auto; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--ink); }
+
+  ul.plain { padding-left: 20px; margin: 0 0 14px; max-width: 70ch; }
+  ul.plain li { margin-bottom: 6px; }
+
+  .callout {
+    border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px;
+    margin: 20px 0; max-width: 72ch; border-radius: 0 6px 6px 0;
+  }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout strong { font-weight: 600; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+
+  footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; }
+  footer p { margin: 0 0 4px; }
+</style>
+
+<div class="page">
+  <div class="eyebrow">Todo App · iteracja 1 · 2 września 2026</div>
+  <h1>Kronika iteracji 1</h1>
+  <p class="lede">Jak zespół agentów zbudował, zrecenzował i przetestował pierwszą wersję aplikacji Todo w jednym, nieprzerwanym przebiegu, bez pytań do człowieka i bez ręcznego pisania kodu przez lidera.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v accent">30:04</div><div class="l">czas od odpowiedzi na wywiad do scalenia z main</div></div>
+    <div class="stat"><div class="v">27</div><div class="l">commitów roboczych na 5 gałęziach agentów</div></div>
+    <div class="stat"><div class="v">44</div><div class="l">testów: 27 pytest, 15 Vitest, 2 Playwright</div></div>
+    <div class="stat"><div class="v">1</div><div class="l">prawdziwy błąd wykryty i naprawiony przez bramki jakości</div></div>
+  </div>
+
+  <h2>Zakres</h2>
+  <p>Iteracja 1 zamyka cztery wymagania: dodanie zadania, usunięcie zadania, oznaczenie jako ukończone lub aktywne oraz wyświetlenie wszystkich zadań. Dane trzymane są w pamięci procesu, bez bazy danych, bez logowania i bez Dockera. Te elementy, razem z priorytetami, tagami, wyszukiwaniem, aktualizacjami na żywo i funkcjami AI na lokalnym modelu Ollama, są zaplanowane na iterację 2.</p>
+  <p>Stos wybrany w wywiadzie: Python 3.12+ z FastAPI po stronie serwera, React z TypeScriptem na Vite i Tailwind CSS po stronie klienta, PostgreSQL z Alembic od iteracji 2, pytest oraz Vitest i Playwright do testów, GitHub Actions jako CI.</p>
+
+  <h2>Jak pracował zespół</h2>
+  <p>Sesja główna pełni rolę lidera zespołu. Nie pisze kodu, tylko wysyła wyspecjalizowanych agentów, czyta ich raporty i decyduje, co dalej. Każdy agent implementujący pracuje we własnym git worktree na własnej gałęzi i commituje każdy krok osobno, więc postęp widać na bieżąco poleceniem <code>git log --all --oneline --graph</code>.</p>
+
+  <div class="pipeline">
+    <div class="stage"><div class="t">Planner</div><div class="d">spec z zamrożonym kontraktem API</div></div>
+    <div class="stage"><div class="t">Backend ‖ Frontend ‖ DevOps</div><div class="d">równolegle, w osobnych worktree</div></div>
+    <div class="stage gate"><div class="t">Reviewer + Security</div><div class="d">bramka: recenzja kodu i bezpieczeństwa</div></div>
+    <div class="stage gate"><div class="t">QA</div><div class="d">bramka: pełne suity, kryteria akceptacji, E2E</div></div>
+    <div class="stage merge"><div class="t">Scalenie</div><div class="d">automatyczne, po przejściu obu bramek</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Model</th><th>Rola w tej iteracji</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip lead">lead</span></td><td>Fable</td><td>bootstrap projektu, wywiad, dyspozycja agentów, scalanie, sprzątanie worktree</td></tr>
+        <tr><td><span class="chip planner">planner</span></td><td>Opus</td><td>spec <code>docs/specs/iteration-1-todo-core.md</code>: układ repo, kontrakt API, UX, 26 kryteriów akceptacji, 12 rozstrzygniętych decyzji</td></tr>
+        <tr><td><span class="chip backend">backend</span></td><td>Sonnet</td><td>FastAPI, repozytorium in-memory za protokołem, router, CORS, middleware limitu ciała żądania, testy pytest</td></tr>
+        <tr><td><span class="chip frontend">frontend</span></td><td>Sonnet</td><td>Vite + React + TypeScript + Tailwind v4, klient API, komponenty, testy Vitest, konfiguracja Playwright i scenariusz E2E</td></tr>
+        <tr><td><span class="chip devops">devops</span></td><td>Haiku</td><td>.gitignore, README, workflow GitHub Actions</td></tr>
+        <tr><td><span class="chip review">reviewer</span></td><td>Opus</td><td>adwersaryjna recenzja różnicy, dwie rundy, samodzielne uruchomienie testów</td></tr>
+        <tr><td><span class="chip review">security</span></td><td>Opus</td><td>audyt OWASP: CORS, CSRF, XSS, walidacja, sekrety, zależności, uprawnienia CI</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td>Sonnet</td><td>pełne suity, ręczna weryfikacja API, przejście po kryteriach, nowy test E2E na samej klawiaturze</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Oś czasu</h2>
+  <p>Czasy lokalne (CEST). Hashe odpowiadają commitom na gałęzi <code>main</code>.</p>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 0 · Bootstrap</h3><span class="span">13:47:48 – 13:48:34</span></div>
+    <p class="phase-note">Folder zawierał tylko seed konfiguracji. Wywiad o domenę i stos odbył się w jednej rundzie pytań. Odpowiedzi trafiły do <code>CLAUDE.md</code>, a do listy zabronionych komend dodano <code>docker system prune</code> i pokrewne.</p>
+    <ul class="events">
+      <li><span class="time">13:47:48</span><span class="chip lead">lead</span><span class="msg">Start pomiaru czasu, tuż po odpowiedziach na wywiad</span></li>
+      <li><span class="time">13:48:34</span><span class="chip lead">lead</span><span class="msg">Bootstrap from seed: Python/FastAPI + React/TS/Vite/Tailwind + PostgreSQL/Alembic<span class="hash">ef5e7ae</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 1 · Planowanie</h3><span class="span">13:49 – 13:54:07</span></div>
+    <p class="phase-note">Planner napisał 717-liniowy spec i nie zgłosił żadnej blokującej niejasności. Dwanaście punktów, które mogły być pytaniami, rozstrzygnął i zapisał, między innymi: identyfikator w ścieżce to zwykły string, więc zniekształcony id daje 404, nie 422; PATCH wymaga pola <code>completed</code>; brak optymistycznych aktualizacji w UI; Tailwind w wersji 4.</p>
+    <ul class="events">
+      <li><span class="time">13:54:07</span><span class="chip planner">planner</span><span class="msg">iteration 1 spec (todo core)<span class="hash">532bf6c</span></span></li>
+    </ul>
+    <div class="callout warn"><strong>Potknięcie procesu.</strong> Planner zapisał spec w drzewie głównym, ale bez commitu. Worktree agentów powstały z HEAD, więc spec do nich nie trafił. Lider zauważył to w minutę po dyspozycji, scommitował spec i skopiował go do każdego worktree. Backend zdążył już przeczytać plik z drzewa głównego, pozostali dostali go wiadomością. Wniosek na przyszłość: commit specu przed dyspozycją implementacji.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 2 · Implementacja równoległa</h3><span class="span">13:53:52 – 13:59:14</span></div>
+    <p class="phase-note">Trzy worktree, trzy gałęzie, trzynaście commitów w niecałe sześć minut. Backend i frontend budowały niezależnie przeciw temu samemu zamrożonemu kontraktowi, więc scalenie przeszło bez konfliktu.</p>
+    <ul class="events">
+      <li><span class="time">13:53:52</span><span class="chip backend">backend</span><span class="msg">scaffold pyproject + app skeleton<span class="hash">e758cfc</span></span></li>
+      <li><span class="time">13:54:30</span><span class="chip backend">backend</span><span class="msg">Pydantic models (Todo, TodoCreate, TodoUpdate, HealthResponse)<span class="hash">f5d37f6</span></span></li>
+      <li><span class="time">13:54:32</span><span class="chip backend">backend</span><span class="msg">in-memory repository + DI provider<span class="hash">223e5c5</span></span></li>
+      <li><span class="time">13:54:32</span><span class="chip devops">devops</span><span class="msg">gitignore<span class="hash">c67f005</span></span></li>
+      <li><span class="time">13:54:35</span><span class="chip backend">backend</span><span class="msg">todos router + app factory with CORS and health endpoint<span class="hash">8eeaf10</span></span></li>
+      <li><span class="time">13:54:49</span><span class="chip devops">devops</span><span class="msg">README<span class="hash">a96e202</span></span></li>
+      <li><span class="time">13:55:05</span><span class="chip devops">devops</span><span class="msg">GitHub Actions CI<span class="hash">468da17</span></span></li>
+      <li><span class="time">13:55:21</span><span class="chip backend">backend</span><span class="msg">test suite for health, todos API, validation, and repository <em>· 22 testy zielone</em><span class="hash">379062e</span></span></li>
+      <li><span class="time">13:55:41</span><span class="chip frontend">frontend</span><span class="msg">scaffold vite + react-ts + tailwind v4 wiring<span class="hash">45bb743</span></span></li>
+      <li><span class="time">13:55:55</span><span class="chip frontend">frontend</span><span class="msg">api client + types<span class="hash">8a01731</span></span></li>
+      <li><span class="time">13:57:17</span><span class="chip frontend">frontend</span><span class="msg">App/AddTodoForm/TodoList/TodoItem components + test setup<span class="hash">c194082</span></span></li>
+      <li><span class="time">13:58:08</span><span class="chip frontend">frontend</span><span class="msg">vitest component tests covering all 4.5 case groups <em>· 14 testów zielonych</em><span class="hash">3121fd7</span></span></li>
+      <li><span class="time">13:59:14</span><span class="chip frontend">frontend</span><span class="msg">playwright config + happy-path e2e spec <em>· napisany, nieuruchomiony: brak backendu w tym worktree</em><span class="hash">501bd78</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 3 · Recenzja, runda 1</h3><span class="span">14:00 – 14:06</span></div>
+    <p class="phase-note">Lider scalił trzy gałęzie do gałęzi integracyjnej i wysłał równolegle recenzenta kodu i recenzenta bezpieczeństwa. Obaj sami uruchomili suity testowe zamiast wierzyć raportom.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Recenzent</th><th>Werdykt</th><th>Najważniejsze ustalenia</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><span class="chip review">security</span></td>
+            <td><span class="verdict ok">Approve</span></td>
+            <td>Zero blokerów. Do poprawy: <code>.env</code> poza gitignore, brak bloku <code>permissions</code> w CI, nieograniczony rozmiar ciała żądania odbijany w odpowiedzi 422, akcja setup-uv na ruchomym tagu. Zweryfikowano czyste: CORS, CSRF, XSS, wstrzyknięcia, sekrety, 0 podatności w zależnościach.</td>
+          </tr>
+          <tr>
+            <td><span class="chip review">reviewer</span></td>
+            <td><span class="verdict warn">Zmiany</span></td>
+            <td><strong>Bloker:</strong> lokalizator <code>getByText(title)</code> w teście E2E trafiał w dwa elementy naraz, bo tytuł występuje też w ukrytej etykiecie checkboxa. Recenzent odtworzył awarię skryptem. Do poprawy: CI na Node 20 przy zależności wymagającej 22, błędna instrukcja E2E w README, brak filtra gałęzi w CI, brak testu na powrót fokusu po dodaniu zadania.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout"><strong>Zewnętrzna przeszkoda.</strong> Port 8000 na maszynie zajmował obcy proces, którego zespół nie miał prawa ruszyć. Zamiast obchodzić problem, lider polecił uczynić port backendu w testach E2E konfigurowalnym zmienną <code>E2E_BACKEND_PORT</code>, a przeglądarki Playwright instalować wewnątrz projektu, nie w katalogu domowym.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 3 · Poprawki</h3><span class="span">14:06:45 – 14:09:20</span></div>
+    <p class="phase-note">Wszystkie ustalenia wróciły do właścicieli plików. Trzy agenty pracowały równolegle na swoich gałęziach.</p>
+    <ul class="events">
+      <li><span class="time">14:06:45</span><span class="chip devops">devops</span><span class="msg">gitignore - add .env entries<span class="hash">cb8a13c</span></span></li>
+      <li><span class="time">14:07:03</span><span class="chip devops">devops</span><span class="msg">ci.yml - security and compliance fixes <em>· permissions, Node 22, filtr gałęzi, setup-uv przypięty do SHA</em><span class="hash">41644c2</span></span></li>
+      <li><span class="time">14:07:14</span><span class="chip frontend">frontend</span><span class="msg">fix e2e strict-mode row scoping + configurable E2E backend port<span class="hash">f89cc4d</span></span></li>
+      <li><span class="time">14:07:18</span><span class="chip devops">devops</span><span class="msg">README - update prerequisites and E2E instructions<span class="hash">b3da2c1</span></span></li>
+      <li><span class="time">14:07:28</span><span class="chip frontend">frontend</span><span class="msg">deleteTodo requires exact 204 per contract<span class="hash">512ef5e</span></span></li>
+      <li><span class="time">14:07:34</span><span class="chip backend">backend</span><span class="msg">add 64 KiB request body size limit middleware (413)<span class="hash">653038c</span></span></li>
+      <li><span class="time">14:07:54</span><span class="chip backend">backend</span><span class="msg">add tests pinning D4 (extra keys ignored) and 422 body shape <em>· 27 testów zielonych</em><span class="hash">ba5aa14</span></span></li>
+      <li><span class="time">14:08:27</span><span class="chip frontend">frontend</span><span class="msg">fix focus-after-add on a still-disabled input + add busy-state test<span class="hash">8d8e09a</span></span></li>
+      <li><span class="time">14:09:20</span><span class="chip frontend">frontend</span><span class="msg">declare engines.node, pin jsdom to a Node-22.22.1-compatible major<span class="hash">f42b850</span></span></li>
+    </ul>
+    <div class="callout"><strong>Błąd znaleziony przez test, którego zażądał recenzent.</strong> Formularz dodawania miał zwracać fokus do pola po udanym zapisie. Wywołanie <code>focus()</code> następowało, gdy pole było jeszcze wyłączone w DOM, bo React nie zdążył przerenderować stanu. Wyłączony element ignoruje fokus, więc wymaganie nigdy nie działało, a żaden test tego nie łapał. Poprawka: <code>flushSync</code> przed ustawieniem fokusu. Test <code>toHaveFocus()</code> pilnuje tego od teraz.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 3 · Recenzja, runda 2 ‖ Faza 4 · QA</h3><span class="span">14:10 – 14:16:41</span></div>
+    <p class="phase-note">Aby nie tracić czasu, QA wystartowało równolegle z ponowną recenzją, we własnym worktree odciętym z gałęzi integracyjnej. Recenzent po raz pierwszy uruchomił E2E na prawdziwym backendzie i zatwierdził z dwiema drobnymi uwagami, obie wynikały z wcześniejszej instrukcji lidera. QA przeszło wszystkie 26 kryteriów akceptacji i dodało scenariusz obsługiwany wyłącznie klawiaturą.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Bramka</th><th>Werdykt</th><th>Co sprawdzono</th></tr></thead>
+        <tbody>
+          <tr><td><span class="chip review">reviewer</span></td><td><span class="verdict ok">Approve</span></td><td>Każde ustalenie z rundy 1 potwierdzone jako rozwiązane, w tym E2E uruchomione zielono. Nowy middleware i konfigurowalny port ocenione jako poprawne. Dwie uwagi: <code>reuseExistingServer</code> niezgodne ze specem, zbyt luźny zakres <code>engines.node</code>.</td></tr>
+          <tr><td><span class="chip qa">qa</span></td><td><span class="verdict ok">Pass</span></td><td>pytest 27/27, Vitest 15/15, build czysty, Playwright 2/2 na porcie 8010. Ręcznie przez curl: przycinanie tytułu, granice 1..200, treść 404, 204 na delete, kolejność po <code>created_at</code>, sufiks Z, health, 413, nagłówki CORS. 26/26 kryteriów. Brak procesów pozostawionych na portach.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="events">
+      <li><span class="time">14:13:57</span><span class="chip frontend">frontend</span><span class="msg">review nits <em>· reuseExistingServer wg specu, engines.node ≥ 22.13</em><span class="hash">3e9a296</span></span></li>
+      <li><span class="time">14:15:15</span><span class="chip qa">qa</span><span class="msg">add keyboard-only Playwright E2E (add → toggle → delete via Tab/Enter/Space)<span class="hash">d2881a5</span></span></li>
+      <li><span class="time">14:16:41</span><span class="chip qa">qa</span><span class="msg">fix tsc -b build break in the new keyboard E2E spec<span class="hash">8c24184</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Faza 5 · Integracja</h3><span class="span">14:17 – 14:17:52</span></div>
+    <p class="phase-note">Gałąź QA scalona do integracyjnej, gałąź integracyjna przesunięta na <code>main</code> metodą fast-forward. Ostatnia kontrola w drzewie głównym: pytest 27/27, Vitest 15/15. Pięć worktree i sześć gałęzi tymczasowych usuniętych. Repozytorium nie ma zdalnego origin, więc nic nie zostało wypchnięte i CI jeszcze nie ruszył.</p>
+    <ul class="events">
+      <li><span class="time">14:17:52</span><span class="chip lead">lead</span><span class="msg">Koniec pomiaru: <code>main</code> na <span class="mono">acca29d</span>, drzewo czyste, 35 commitów łącznie z scaleniami</span></li>
+    </ul>
+  </div>
+
+  <h2>Co powstało</h2>
+  <div class="cols">
+    <div>
+      <h3>Backend · <code>backend/</code></h3>
+      <ul class="plain">
+        <li><code>app/main.py</code>: aplikacja, CORS dla <code>localhost:5173</code>, endpoint zdrowia</li>
+        <li><code>app/models.py</code>: modele Pydantic, tytuł przycinany, 1..200 znaków</li>
+        <li><code>app/repository.py</code>: protokół <code>TodoRepository</code> i implementacja in-memory, gotowe na podmianę na PostgreSQL</li>
+        <li><code>app/routers/todos.py</code>: cztery endpointy, wszystkie <code>async</code></li>
+        <li><code>app/middleware.py</code>: limit 64 KiB na ciało żądania, 413</li>
+        <li><code>tests/</code>: 27 testów z izolacją per test przez <code>dependency_overrides</code></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Frontend · <code>frontend/</code></h3>
+      <ul class="plain">
+        <li><code>src/api/</code>: typy i klient, wyłącznie relatywne adresy <code>/api/...</code></li>
+        <li><code>src/components/</code>: <code>AddTodoForm</code>, <code>TodoList</code>, <code>TodoItem</code> z etykietami dostępnymi dla czytników ekranu</li>
+        <li><code>src/App.tsx</code>: stany ładowania, pustej listy, błędu, licznik aktywnych</li>
+        <li><code>src/App.test.tsx</code>: 15 testów Vitest z mockowanym klientem</li>
+        <li><code>e2e/</code>: ścieżka szczęśliwa oraz scenariusz na samej klawiaturze</li>
+        <li><code>vite.config.ts</code>: proxy <code>/api</code> na port 8000, cel nadpisywalny zmienną</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Kontrakt API</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Metoda i ścieżka</th><th>Ciało</th><th>Odpowiedź</th></tr></thead>
+      <tbody>
+        <tr><td class="num">GET /api/todos</td><td>—</td><td>200, lista posortowana po <code>created_at</code> rosnąco</td></tr>
+        <tr><td class="num">POST /api/todos</td><td><code>{"title": string}</code></td><td>201, utworzone zadanie; 422 przy złym tytule</td></tr>
+        <tr><td class="num">PATCH /api/todos/{id}</td><td><code>{"completed": boolean}</code></td><td>200, zaktualizowane zadanie; 404 <code>{"detail":"Todo not found"}</code></td></tr>
+        <tr><td class="num">DELETE /api/todos/{id}</td><td>—</td><td>204 bez treści; 404 dla nieznanego id</td></tr>
+        <tr><td class="num">GET /api/health</td><td>—</td><td>200 <code>{"status":"ok"}</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Wynik testów na <code>main</code></h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Suita</th><th>Komenda</th><th>Wynik</th></tr></thead>
+      <tbody>
+        <tr><td>Backend, pytest</td><td class="num">cd backend && uv run pytest</td><td class="num">27 passed</td></tr>
+        <tr><td>Frontend, Vitest</td><td class="num">cd frontend && npm test</td><td class="num">15 passed</td></tr>
+        <tr><td>Frontend, build</td><td class="num">cd frontend && npm run build</td><td class="num">tsc -b + vite build OK</td></tr>
+        <tr><td>E2E, Playwright</td><td class="num">E2E_BACKEND_PORT=8010 npm run e2e</td><td class="num">2 passed</td></tr>
+        <tr class="total"><td>Razem</td><td></td><td class="num">44 passed, 0 failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decyzje podjęte bez pytania</h2>
+  <ul class="plain">
+    <li><strong>React 19, Vite 8, TypeScript 6</strong> zamiast dosłownego React 18. Konfiguracja projektu mówi „React 18+”, więc lider zaakceptował nowsze wersje i odnotował to w recenzji.</li>
+    <li><strong>Node 22 w CI i w polu <code>engines</code></strong>, choć spec mówił o Node 20. Zależność jsdom wymaga 22, a maszyna deweloperska ma 22.22.1; jsdom przypięty do wersji 29, by zniknęło ostrzeżenie przy instalacji.</li>
+    <li><strong>Docker, baza, logowanie i agent AI</strong> pozostawione na iterację 2, zgodnie z podziałem w zleceniu. Proces bootstrapu proponowałby osobnego agenta do pracy z Ollamą, ale wymaga to zgody, o którą nie wolno było pytać.</li>
+    <li><strong>Limit ciała żądania</strong> dodany mimo braku w specu, bo audyt bezpieczeństwa wskazał go jako tani środek, a kształt odpowiedzi 422 pozostał nietknięty.</li>
+  </ul>
+
+  <h2>Do wzięcia w iteracji 2</h2>
+  <ul class="plain">
+    <li>Protokół repozytorium nie ma parametru właściciela; jeden model <code>Todo</code> służy jako rekord i odpowiedź. Przed dodaniem logowania warto to rozdzielić, inaczej pola użytkownika wpłyną do odpowiedzi API.</li>
+    <li>Po przełączeniu checkboxa wiersz na chwilę się wyłącza, przeglądarka gubi fokus i ląduje on na <code>body</code>. Spec tego nie wymagał, ale dla użytkowników klawiatury to szorstka krawędź.</li>
+    <li>Limit ciała żądania sprawdza tylko nagłówek <code>Content-Length</code>; przesył chunked go omija.</li>
+    <li><code>tsconfig.e2e.json</code> nie ma biblioteki <code>dom</code>; testy używające globali przeglądarki w <code>page.evaluate</code> potrzebują dyrektywy referencyjnej.</li>
+    <li>Dokumentacja <code>/docs</code> i <code>/redoc</code> jest otwarta, co jest właściwe lokalnie, ale wymaga flagi środowiskowej przed wyjściem poza localhost.</li>
+  </ul>
+
+  <h2>Jak uruchomić</h2>
+  <pre><code># backend, port 8000
+cd backend && uv sync && uv run uvicorn app.main:app --reload
+
+# frontend, port 5173, proxy /api na backend
+cd frontend && npm install && npm run dev
+
+# testy
+cd backend && uv run pytest
+cd frontend && npm test && npm run build
+cd frontend && npx playwright install chromium && npm run e2e
+# gdy port 8000 jest zajęty:
+E2E_BACKEND_PORT=8010 npm run e2e</code></pre>
+
+  <footer>
+    <p>Todo App, iteracja 1. Wygenerowano 2 września 2026 z historii repozytorium na gałęzi <span class="mono">main</span> (<span class="mono">acca29d</span>).</p>
+    <p>Pełny spec: <span class="mono">docs/specs/iteration-1-todo-core.md</span>. Konfiguracja zespołu: <span class="mono">CLAUDE.md</span> i <span class="mono">.claude/agents/</span>.</p>
+  </footer>
+</div>

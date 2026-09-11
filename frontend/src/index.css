@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* One neutral page behind every screen, signed in or out, so a white surface
+   always reads as a surface (iteration-3 redesign). */
+body {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-900);
+}

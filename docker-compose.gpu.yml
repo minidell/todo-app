@@ -1,0 +1,26 @@
+# GPU override for the `ollama` service (master §1.2). The default docker-compose.yml
+# runs Ollama on CPU so the stack works on any machine; apply this override on a host
+# with an NVIDIA GPU and the `nvidia` container runtime installed
+# (https://github.com/NVIDIA/nvidia-container-toolkit) to give Ollama one GPU.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml --profile ai up -d
+#
+# This host has an NVIDIA GTX 1060 6 GB — `qwen2.5:3b` (~2 GB quantized) fits
+# comfortably. A bigger model (qwen2.5:7b, llama3.1:8b) may not, depending on quantization.
+
+services:
+  ollama:
+    environment:
+      # On a single-GPU host this removes one source of discovery ambiguity — Ollama
+      # sometimes takes a moment to enumerate devices, and has been observed to fall
+      # back to CPU on a slow discovery without this pinned (iteration 4, IT3-6). See
+      # README "Troubleshooting: GPU discovery".
+      CUDA_VISIBLE_DEVICES: "0"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]

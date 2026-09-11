@@ -1,0 +1,354 @@
+<title>Kronika iteracji 2</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F4F6F8; --surface: #FFFFFF; --surface-2: #EAEEF2;
+    --ink: #1A2230; --ink-2: #4A5568; --ink-3: #7B8794; --line: #D6DCE3;
+    --accent: #0E7C72; --accent-ink: #0B5F58; --accent-soft: #D9F0EC;
+    --warn: #B4600A; --warn-soft: #FBE9D3; --ok: #2F7A3E; --ok-soft: #DDF1E0;
+    --bad: #B42318; --bad-soft: #FDE2E0;
+    --planner: #6D4FC2; --backend: #2D5BD1; --frontend: #C2410C; --devops: #2F855A;
+    --qa: #0B7C9E; --review: #5B6B7F; --lead: #1A2230; --code-bg: #1E2530; --code-ink: #E6EBF1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+      --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+      --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+      --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+      --bad: #F08A80; --bad-soft: #3F1B18;
+      --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+      --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+    --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+    --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+    --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+    --bad: #F08A80; --bad-soft: #3F1B18;
+    --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+    --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  a { color: var(--accent-ink); }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 6px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 12px; }
+  .lede { font-size: 18px; color: var(--ink-2); margin-top: 16px; max-width: 62ch; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 32px; }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .l { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 34px; } }
+  .pipeline { display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding: 4px 0 8px; margin: 20px 0 8px; }
+  .stage { flex: 1 0 140px; position: relative; padding: 12px 14px; border: 1px solid var(--line); background: var(--surface); border-radius: 6px; }
+  .stage + .stage { margin-left: 22px; }
+  .stage + .stage::before { content: ""; position: absolute; left: -22px; top: 50%; width: 22px; height: 1px; background: var(--ink-3); }
+  .stage .t { font-weight: 600; font-size: 14px; }
+  .stage .d { font-size: 12.5px; color: var(--ink-2); margin-top: 4px; line-height: 1.4; }
+  .stage.gate { border-style: dashed; }
+  .stage.merge { border-color: var(--accent); background: var(--accent-soft); }
+  .chip { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; white-space: nowrap; color: #fff; line-height: 1.5; }
+  .chip.planner { background: var(--planner); } .chip.backend { background: var(--backend); } .chip.frontend { background: var(--frontend); }
+  .chip.devops { background: var(--devops); } .chip.qa { background: var(--qa); } .chip.review { background: var(--review); } .chip.lead { background: var(--lead); color: var(--bg); }
+  .verdict { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .verdict.ok { background: var(--ok-soft); color: var(--ok); } .verdict.warn { background: var(--warn-soft); color: var(--warn); } .verdict.bad { background: var(--bad-soft); color: var(--bad); }
+  .phase { margin-top: 36px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+  .phase-head h3 { margin: 0; }
+  .phase-head .span { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .phase-note { color: var(--ink-2); font-size: 15px; margin: 12px 0 6px; max-width: 70ch; }
+  .events { list-style: none; margin: 0; padding: 0; }
+  .events li { display: grid; grid-template-columns: 72px 92px 1fr; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .events li:last-child { border-bottom: 0; }
+  .events .time { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .events .msg { font-size: 15px; }
+  .events .msg .hash { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); margin-left: 8px; }
+  .events .msg em { color: var(--ink-2); }
+  @media (max-width: 560px) { .events li { grid-template-columns: 64px 1fr; } .events .msg { grid-column: 1 / -1; } }
+  .pause { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 10px 12px; margin: 10px 0; background: var(--warn-soft); border-radius: 6px; font-size: 14px; color: var(--warn); }
+  .pause .time { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .tbl-wrap { overflow-x: auto; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--ink); }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; max-width: 70ch; }
+  ul.plain li { margin-bottom: 6px; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; margin: 20px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout.bad { border-left-color: var(--bad); }
+  .callout strong { font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+  footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; }
+  footer p { margin: 0 0 4px; }
+</style>
+
+<div class="page">
+  <div class="eyebrow">Todo App · iteracja 2 · 2–3 września 2026</div>
+  <h1>Kronika iteracji 2</h1>
+  <p class="lede">Jak zespół agentów dobudował do aplikacji Todo bazę danych, Dockera, konta użytkowników, listy, priorytety i tagi, aktualizacje na żywo oraz funkcje AI na lokalnym modelu, przez cztery kolejne slice'y, każdy z osobnymi bramkami jakości, z trzema przerwami na limity sesji po drodze.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v accent">5 h 40 min</div><div class="l">czas netto, po odjęciu 9 h 27 min przerw na limity sesji</div></div>
+    <div class="stat"><div class="v">234</div><div class="l">commitów: 187 roboczych na gałęziach agentów i 47 scaleń</div></div>
+    <div class="stat"><div class="v">1 138</div><div class="l">testów na main: 728 backend (Postgres), 211 ai-agent, 186 Vitest, 13 Playwright</div></div>
+    <div class="stat"><div class="v">4</div><div class="l">slice'y, każdy osobno zrecenzowany, zaudytowany i przetestowany</div></div>
+  </div>
+
+  <h2>Zakres</h2>
+  <p>Zlecenie iteracji 2 obejmowało wszystko, co zostało z pierwotnego briefu: trwałość w PostgreSQL, logowanie i wielu użytkowników, priorytety, terminy i tagi, filtrowanie, sortowanie i wyszukiwanie, podzadania oraz wiele list, Docker i docker-compose dla backendu, frontendu, agenta AI i bazy, aktualizacje na żywo oraz funkcje AI na małym modelu Ollamy uruchomionym w Dockerze: tworzenie zadań z języka naturalnego, podział na podzadania, sugestie priorytetu i tagów, dzienne podsumowanie.</p>
+  <p>Planner pociął to na cztery kolejne slice'y, z których każdy zostawiał aplikację działającą i nadającą się do scalenia: (1) trwałość i Docker, (2) konta i listy, (3) wzbogacenie zadań i filtry, (4) czas rzeczywisty i AI. Mikroserwis <code>ai-agent</code> ze slice'u 4 nie zależał od niczego, więc powstał równolegle ze slice'em 1.</p>
+
+  <h2>Jak pracował zespół</h2>
+  <p>Ten sam model co w iteracji 1: lider nie pisze kodu, dyspozycja do wyspecjalizowanych agentów, każdy we własnym git worktree, commit po każdym kroku. Nowością było nakładanie slice'ów: implementacja slice'u N+1 startowała, gdy slice N przechodził bramki, a poprawki spływały do gałęzi integracyjnej rundami. Trzy razy w trakcie pipeline zatrzymał się na limicie sesji; po każdej przerwie agenty wznawiano z zachowanym kontekstem.</p>
+
+  <div class="pipeline">
+    <div class="stage"><div class="t">Planner</div><div class="d">spec główny + 4 specyfikacje slice'ów, 2 725 linii</div></div>
+    <div class="stage"><div class="t">Slice 1 → 2 → 3 → 4</div><div class="d">backend ‖ frontend ‖ devops, nakładające się w czasie</div></div>
+    <div class="stage gate"><div class="t">Reviewer + Security</div><div class="d">1–3 rundy na slice</div></div>
+    <div class="stage gate"><div class="t">QA</div><div class="d">pełny stos compose, dwa tory testów, E2E ×3</div></div>
+    <div class="stage merge"><div class="t">Scalenie na main</div><div class="d">po każdym slice'ie</div></div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Model</th><th>Commity</th><th>Najważniejsza praca</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip lead">lead</span></td><td>Fable</td><td class="num">3 + 47 scaleń</td><td>dyspozycja, rundy poprawek, decyzje kontraktowe, integracja, podgląd, sprzątanie po przerwach</td></tr>
+        <tr><td><span class="chip planner">planner</span></td><td>Opus</td><td class="num">1</td><td>model danych, kontrakt API v2, SSE zamiast WebSocket, architektura AI, strategia testów SQLite + Postgres, plan slice'ów</td></tr>
+        <tr><td><span class="chip backend">backend</span></td><td>Opus</td><td class="num">95</td><td>SQLAlchemy async + Alembic, JWT/argon2, listy, budowniczy zapytań, tagi, podzadania, broker SSE, proxy AI; osobna instancja: mikroserwis <code>ai-agent</code></td></tr>
+        <tr><td><span class="chip frontend">frontend</span></td><td>Haiku → Opus</td><td class="num">52</td><td>ekrany logowania, przełącznik list, kontrolki priorytetu/terminu/tagów, filtry, czytnik SSE, panele AI, 13 scenariuszy Playwright</td></tr>
+        <tr><td><span class="chip devops">devops</span></td><td>Sonnet / Haiku</td><td class="num">32</td><td>Dockerfile'e, compose z profilem <code>ai</code>, override GPU, nginx z CSP i limitami, CI z torem Postgres, README</td></tr>
+        <tr><td><span class="chip review">reviewer</span></td><td>Opus</td><td class="num">—</td><td>9 rund recenzji, każda z samodzielnym uruchomieniem suit i sondowaniem działającej aplikacji</td></tr>
+        <tr><td><span class="chip review">security</span></td><td>Opus</td><td class="num">—</td><td>7 audytów: IDOR, JWT, argon2, limity, CORS/CSP, SSRF, prompt injection, łańcuch dostaw</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td>Sonnet</td><td class="num">2</td><td>7 przebiegów QA, w tym dwa przerwane limitem; znalazło trzy błędy krytyczne, których testy jednostkowe nie mogły złapać</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Oś czasu</h2>
+  <p>Czasy lokalne (CEST). Wymienione są commity kluczowe dla przebiegu; pełna lista 234 wpisów jest w <code>git log</code>.</p>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Planowanie</h3><span class="span">2 IX · 14:33 – 14:53</span></div>
+    <p class="phase-note">Start pomiaru o 14:33, tuż po poleceniu. Planner przeczytał kod iteracji 1 i napisał spec główny (1 024 linie) oraz cztery specyfikacje slice'ów. W tym czasie w tle pobrały się obrazy Dockera i model <code>qwen2.5:3b</code> (1,9 GB) do wolumenu.</p>
+    <ul class="events">
+      <li><span class="time">14:53</span><span class="chip planner">planner</span><span class="msg">iteration 2 master spec + 4 slice specs <em>· tym razem scommitowany przed dyspozycją</em><span class="hash">65328ec</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Slice 1 · trwałość i Docker ‖ ai-agent</h3><span class="span">14:54 – 15:34</span></div>
+    <p class="phase-note">Trzy worktree dla slice'u 1 i czwarty dla mikroserwisu AI. Backend przeniósł aplikację na async SQLAlchemy z jedną odwracalną migracją bazową dla całego docelowego schematu; devops zbudował compose i po drodze naprawił dwa błędy nginx; ai-agent od razu przeszedł test na żywym modelu, który wymusił poprawki promptów.</p>
+    <ul class="events">
+      <li><span class="time">14:55</span><span class="chip backend">backend</span><span class="msg">add db layer: Base + naming convention, UtcDateTime, ORM entities, session factory<span class="hash">c5cb028</span></span></li>
+      <li><span class="time">15:00</span><span class="chip backend">backend</span><span class="msg">ai-agent scaffold FastAPI service, Ollama client, prompts and sanitizer<span class="hash">f459a6b</span></span></li>
+      <li><span class="time">15:01</span><span class="chip devops">devops</span><span class="msg">add docker-compose.yml (db/backend/frontend) + nginx IPv6/resolver fixes<span class="hash">3fb1dc9</span></span></li>
+      <li><span class="time">15:03</span><span class="chip backend">backend</span><span class="msg">add Alembic config and the reversible 0001 baseline migration<span class="hash">7609d44</span></span></li>
+      <li><span class="time">15:07</span><span class="chip backend">backend</span><span class="msg">ai-agent add the live Ollama lane and tune the prompts against it <em>· „jutro” bez daty, „pilne” jako medium: naprawione kotwicami TODAY/TOMORROW</em><span class="hash">63313ef</span></span></li>
+      <li><span class="time">15:16</span><span class="chip backend">backend</span><span class="msg">ai-agent compare the internal token as bytes, not str <em>· nagłówek z bajtem spoza ASCII dawał 500</em><span class="hash">89690ec</span></span></li>
+      <li><span class="time">15:21</span><span class="chip backend">backend</span><span class="msg">reject writes into another user's list <em>· audyt: zapis do cudzej listy</em><span class="hash">c3685ef</span></span></li>
+      <li><span class="time">15:28</span><span class="chip devops">devops</span><span class="msg">stop entrypoint from re-syncing dev deps via uv run at container start <em>· kontener ściągał pytest z PyPI przy każdym starcie</em><span class="hash">cc42178</span></span></li>
+    </ul>
+    <div class="pause"><span class="time">15:33</span><span>Przerwa 1: limit sesji, 33 min. Recenzent i QA padły w trakcie; wznowione jako świeże agenty.</span></div>
+    <ul class="events">
+      <li><span class="time">16:14</span><span class="chip backend">backend</span><span class="msg">stop CORS_ORIGINS crashing the app at boot <em>· pydantic-settings dekodował listę jako JSON; kontener nigdy nie wstawał, a testy tego nie widziały, bo omijały źródło env</em><span class="hash">6d08d8d</span></span></li>
+      <li><span class="time">16:18</span><span class="chip backend">backend</span><span class="msg">make local-user and default-list creation idempotent <em>· 30 równoległych żądań na zimnej bazie: 9 błędów 500</em><span class="hash">6081001</span></span></li>
+      <li><span class="time">16:33</span><span class="chip qa">qa</span><span class="msg">strengthen keyboard E2E spec to assert focus retention<span class="hash">17b578a</span></span></li>
+      <li><span class="time">16:35</span><span class="chip lead">lead</span><span class="msg">Slice 1 na <code>main</code> po dwóch rundach recenzji i QA z restartem kontenera i przetrwaniem danych</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Slice 2 · konta, użytkownicy, listy</h3><span class="span">16:09 – 16:52 (+ finał 21:04–21:40)</span></div>
+    <p class="phase-note">Wystartował, zanim slice 1 przeszedł ostatnią bramkę, na jego zrecenzowanym kodzie. Backend usunął flagę wyłączającą uwierzytelnianie razem z użytkownikiem zastępczym, wprowadził JWT, argon2 i limity prób. Audyt wskazał, że limit liczony na parę adres+e-mail nie ogranicza pracy argon2 z jednego adresu; dołożono drugi limit i przeniesiono haszowanie poza pętlę zdarzeń.</p>
+    <ul class="events">
+      <li><span class="time">16:17</span><span class="chip backend">backend</span><span class="msg">replace the bootstrap user with real JWT auth (D-S1)<span class="hash">5d06aa8</span></span></li>
+      <li><span class="time">16:18</span><span class="chip frontend">frontend</span><span class="msg">AuthContext, login/register screens, header and app shell<span class="hash">87d7973</span></span></li>
+      <li><span class="time">16:22</span><span class="chip backend">backend</span><span class="msg">lists CRUD, list-scoped todos and the isolation matrix<span class="hash">2deb775</span></span></li>
+      <li><span class="time">16:43</span><span class="chip backend">backend</span><span class="msg">bound argon2 work per address and move hashing off the event loop<span class="hash">87b025f</span></span></li>
+      <li><span class="time">16:52</span><span class="chip frontend">frontend</span><span class="msg">e2e fixture email domain example.com <em>· QA: walidator e-maili odrzucał zarezerwowaną domenę .test ze specu; 10/10 testów E2E padało</em><span class="hash">528adf9</span></span></li>
+    </ul>
+    <div class="callout bad"><strong>Najpoważniejszy błąd iteracji, znaleziony przez QA curl-em.</strong> Zależność sesji bazy commitowała w kroku sprzątania, czyli już po wysłaniu odpowiedzi HTTP. Rejestracja 201, a natychmiastowe logowanie 401; nowe zadanie widoczne w liczniku dopiero po chwili. Testy jednostkowe nigdy tego nie łapały, bo pod <code>ASGITransport</code> sprzątanie kończy się, zanim test odzyska sterowanie. Naprawa: zależność w zakresie <code>function</code> plus jawny <code>commit()</code> przed odpowiedzią w każdym zapisującym handlerze, test na prawdziwym gnieździe uvicorna i testy trwałości z drugiego silnika. Recenzent zweryfikował je mutacyjnie: przywrócenie błędu wywraca 3 z 4 testów.</div>
+    <ul class="events">
+      <li><span class="time">17:39</span><span class="chip backend">backend</span><span class="msg">commit before the response instead of in dependency teardown<span class="hash">c2b658d</span></span></li>
+    </ul>
+    <div class="pause"><span class="time">17:40</span><span>Przerwa 2: limit sesji, 3 h 22 min. Cztery agenty ucięte w połowie pracy; po wznowieniu dokończyły z tego samego kontekstu.</span></div>
+    <ul class="events">
+      <li><span class="time">21:04</span><span class="chip backend">backend</span><span class="msg">add a real-socket regression test for the commit-ordering bug<span class="hash">56c01c4</span></span></li>
+      <li><span class="time">21:40</span><span class="chip lead">lead</span><span class="msg">Slice 2 na <code>main</code>: trzy kolejne przebiegi E2E 10/10, zero wyścigów w 30 parach żądań</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Slice 3 · priorytety, terminy, tagi, podzadania, filtry</h3><span class="span">16:40 – 17:08 (+ adopcja 21:05–21:27)</span></div>
+    <p class="phase-note">Backend zbudował jeden budowniczy zapytań, który z tej samej listy warunków tworzy zapytanie o wiersze i o licznik, więc <code>X-Total-Count</code> nie może się rozjechać z filtrami. Frontend dostał panel edycji, chipy tagów i pasek filtrów. Testy własne backendu znalazły nieaktualną kolekcję podzadań po zmianie rodzica i lukę w budżecie zapytań N+1.</p>
+    <ul class="events">
+      <li><span class="time">16:45</span><span class="chip backend">backend</span><span class="msg">full todo write surface, partial PATCH, subtasks and the query builder<span class="hash">c471f81</span></span></li>
+      <li><span class="time">16:47</span><span class="chip frontend">frontend</span><span class="msg">filter bar with search, sort and tag chips<span class="hash">647e0ea</span></span></li>
+      <li><span class="time">17:08</span><span class="chip frontend">frontend</span><span class="msg">cap the tag input at 10 tags with inline copy<span class="hash">2f8da35</span></span></li>
+      <li><span class="time">21:11</span><span class="chip backend">backend</span><span class="msg">normalize, de-duplicate and cap the repeatable tag filter <em>· audyt: 500 powtórzeń tego samego tagu = 3,8 s, 1000 = błąd 500; po poprawce 0,01 s</em><span class="hash">0b30724</span></span></li>
+      <li><span class="time">21:23</span><span class="chip backend">backend</span><span class="msg">apply parent_id before list_id in PATCH <em>· awans podzadania z przenosinami ciągnął za sobą starego rodzica i rodzeństwo</em><span class="hash">34c70a6</span></span></li>
+      <li><span class="time">22:14</span><span class="chip qa">qa</span><span class="msg">fix strict-mode locator violation in enrichment.spec.ts<span class="hash">d83d51d</span></span></li>
+      <li><span class="time">22:15</span><span class="chip lead">lead</span><span class="msg">Slice 3 na <code>main</code>, 15/15 kryteriów, E2E 11/11 ×3</span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Slice 4 · czas rzeczywisty i AI</h3><span class="span">17:08 – 22:57, 04:30 – 05:40</span></div>
+    <p class="phase-note">Devops podpiął trio ai-agent, ollama i ollama-pull pod profil <code>ai</code> z rozgrzewaniem modelu, frontend napisał własny czytnik SSE po <code>fetch</code> (bez <code>EventSource</code>, żeby token szedł w nagłówku, nie w adresie), backend dołożył brokera zdarzeń publikującego dopiero po commicie i proxy AI, które samo składa kontekst z danych zalogowanego użytkownika. Żaden endpoint AI nie zapisuje nic sam; każda propozycja to szkic do zatwierdzenia.</p>
+    <ul class="events">
+      <li><span class="time">17:10</span><span class="chip devops">devops</span><span class="msg">docker-compose AI trio (ai-agent, ollama, ollama-pull) under profile "ai"<span class="hash">bf5c734</span></span></li>
+      <li><span class="time">17:18</span><span class="chip frontend">frontend</span><span class="msg">SSE reader over fetch + ReadableStream<span class="hash">1084a8a</span></span></li>
+      <li><span class="time">17:28</span><span class="chip frontend">frontend</span><span class="msg">AI helpers UI: draft, split, suggest, summary<span class="hash">03a5c10</span></span></li>
+      <li><span class="time">21:09</span><span class="chip backend">backend</span><span class="msg">EventBroker, SSE framing and publish-after-commit staging<span class="hash">c522ec7</span></span></li>
+      <li><span class="time">21:58</span><span class="chip backend">backend</span><span class="msg">exercise all five AI endpoints in the live check<span class="hash">8abaa3c</span></span></li>
+      <li><span class="time">22:32</span><span class="chip backend">backend</span><span class="msg">end the event stream when its token expires <em>· audyt: strumień żył wiecznie po wygaśnięciu tokena</em><span class="hash">cbb9261</span></span></li>
+      <li><span class="time">22:36</span><span class="chip backend">backend</span><span class="msg">cap concurrent streams per user and reclaim silent clients<span class="hash">750446c</span></span></li>
+    </ul>
+    <div class="callout warn"><strong>Decyzja użytkownika, cofnięta po kwadransie.</strong> O 22:38 padło polecenie: AI lokalnie, bez żadnych tokenów. Trzy agenty usunęły wewnętrzny sekret między backendem a ai-agentem. Na pytanie, czy to wyłącza uwierzytelnianie użytkowników, odpowiedź brzmiała: nie, logowanie i izolacja danych są nietknięte, usunięty został tylko sekret między serwisami. Użytkownik uznał, że w aplikacji produkcyjnej sekret powinien być, i o 22:51 trzy commity odwrócono, dokładając wymóg minimum 32 znaków i odrzucanie placeholderów.</div>
+    <ul class="events">
+      <li><span class="time">22:51</span><span class="chip backend">backend</span><span class="msg">Revert "backend: drop AI_AGENT_TOKEN (AI is local, no tokens)"<span class="hash">7573bd7</span></span></li>
+      <li><span class="time">22:54</span><span class="chip backend">backend</span><span class="msg">ai-agent require a strong, non-placeholder internal token <em>· placeholder ma dokładnie 32 znaki, więc sama długość by go przepuściła</em><span class="hash">ad25fc7</span></span></li>
+    </ul>
+    <div class="pause"><span class="time">22:57</span><span>Przerwa 3: limit sesji, 5 h 32 min. Cztery agenty ucięte; gałęzie przetrwały nietknięte.</span></div>
+    <ul class="events">
+      <li><span class="time">04:33</span><span class="chip devops">devops</span><span class="msg">drop fixed network name: QA found cross-project DNS collision <em>· dwa stosy compose na jednym hoście dzieliły sieć; rejestracja z QA trafiła do bazy podglądu</em><span class="hash">5da0150</span></span></li>
+      <li><span class="time">04:42</span><span class="chip backend">backend</span><span class="msg">reject published example secrets, not just short ones <em>· audyt: przykładowy JWT_SECRET z repo miał 43 znaki i pozwalałby podrobić token dowolnego użytkownika</em><span class="hash">4fb5f42</span></span></li>
+      <li><span class="time">05:05</span><span class="chip frontend">frontend</span><span class="msg">run the E2E backend with AI disabled by default <em>· README-owe npm run e2e przestało działać po wymogu tokena</em><span class="hash">a51ac0b</span></span></li>
+      <li><span class="time">05:15</span><span class="chip backend">backend</span><span class="msg">spread the pool test across users so the stream cap cannot skew it <em>· dwie własne zmiany w konflikcie, widoczne tylko w torze Postgres</em><span class="hash">606e481</span></span></li>
+      <li><span class="time">05:37</span><span class="chip frontend">frontend</span><span class="msg">give E2E accounts UUID email addresses <em>· licznik per worker kolidował w tej samej milisekundzie</em><span class="hash">f2447b6</span></span></li>
+      <li><span class="time">05:40</span><span class="chip lead">lead</span><span class="msg">Slice 4 na <code>main</code> (<span class="mono">c7892db</span>), podgląd z profilem <code>ai</code> podniesiony, koniec pomiaru</span></li>
+    </ul>
+  </div>
+
+  <h2>Bramki jakości</h2>
+  <p>Każdy slice przeszedł recenzję kodu, audyt bezpieczeństwa i QA na pełnym stosie. Poniżej to, co bramki wyłapały, a czego nie widać w zielonych suitach.</p>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Slice</th><th>Bramka</th><th>Znalezisko</th><th>Waga</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td><span class="chip review">reviewer</span></td><td>Entrypoint kontenera synchronizował zależności deweloperskie z PyPI przy każdym starcie; kontener nie ruszał bez sieci.</td><td><span class="verdict warn">should-fix</span></td></tr>
+        <tr><td>1</td><td><span class="chip qa">qa</span> → <span class="chip review">reviewer</span></td><td>Ustawienie <code>CORS_ORIGINS</code> nie dało się sparsować ze zmiennej środowiskowej; backend w compose nigdy nie wstał. Testy omijały źródło env.</td><td><span class="verdict bad">bloker</span></td></tr>
+        <tr><td>1</td><td><span class="chip review">security</span></td><td>Zapis zadania do listy innego użytkownika; nieescapowane <code>%</code> i <code>_</code> w wyszukiwaniu nazw list; flaga wyłączająca auth możliwa do pozostawienia w produkcji.</td><td><span class="verdict warn">medium ×3</span></td></tr>
+        <tr><td>2</td><td><span class="chip qa">qa</span></td><td>Commit bazy po wysłaniu odpowiedzi: losowe 401 po rejestracji, nieaktualne liczniki. Widoczne tylko na prawdziwym gnieździe.</td><td><span class="verdict bad">krytyczne</span></td></tr>
+        <tr><td>2</td><td><span class="chip review">security</span></td><td>Limit prób liczony per adres+e-mail nie ograniczał pracy argon2 z jednego adresu; haszowanie blokowało pętlę zdarzeń; hasło echem w treści 422.</td><td><span class="verdict warn">medium</span></td></tr>
+        <tr><td>3</td><td><span class="chip review">security</span></td><td>Nieograniczone powtarzanie parametru <code>tag=</code>: 250× dłuższe zapytanie, przy 1000 powtórzeń błąd 500.</td><td><span class="verdict warn">medium</span></td></tr>
+        <tr><td>4</td><td><span class="chip review">security</span></td><td>Strumień SSE żył po wygaśnięciu tokena; brak limitu strumieni na użytkownika; przykładowy <code>JWT_SECRET</code> z repo przechodził walidację.</td><td><span class="verdict bad">high</span></td></tr>
+        <tr><td>4</td><td><span class="chip qa">qa</span></td><td>Stała nazwa sieci Dockera łączyła dwa projekty compose na jednym hoście; test E2E AI liczył chipy tagów jako zadania.</td><td><span class="verdict bad">krytyczne</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Co powstało</h2>
+  <div class="cols">
+    <div>
+      <h3>Backend · <code>backend/</code></h3>
+      <ul class="plain">
+        <li>SQLAlchemy 2 async, Alembic z jedną odwracalną migracją bazową, schemat przenośny między SQLite (testy) i PostgreSQL</li>
+        <li>JWT HS256, argon2id, rejestracja/logowanie/me, dwa limity prób, zaufane nagłówki proxy</li>
+        <li>Repozytoria z <code>user_id</code> jako pierwszym argumentem; cudze zasoby zawsze 404</li>
+        <li>Listy, tagi, podzadania, budowniczy zapytań filtr/sort/szukaj z <code>X-Total-Count</code></li>
+        <li><code>GET /api/events</code>: broker SSE per użytkownik, publikacja po commicie, koniec przy wygaśnięciu tokena, limit 8 strumieni</li>
+        <li>Proxy AI: 5 endpointów, kontekst z własnych danych, limit 20 wywołań na 5 min, drabinka timeoutów 45/50/60 s</li>
+      </ul>
+      <h3>ai-agent · <code>ai-agent/</code></h3>
+      <ul class="plain">
+        <li>Osobny serwis FastAPI, Ollama z odpowiedzią w schemacie JSON, walidacja, jedna próba naprawy, warstwa przycinająca („nigdy nie ufaj modelowi”)</li>
+        <li>Wspólny sekret ≥32 znaki, limit ciała żądania, wspólny deadline, sanityzacja znaków sterujących</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Frontend · <code>frontend/</code></h3>
+      <ul class="plain">
+        <li>Ekrany logowania i rejestracji, kontekst sesji, globalna obsługa 401</li>
+        <li>Przełącznik list z licznikami, tworzenie, zmiana nazwy, usuwanie z potwierdzeniem inline</li>
+        <li>Priorytet, termin z „Overdue”, opis, chipy tagów (limit 10), podzadania, panel edycji z zarządzaniem fokusem</li>
+        <li>Pasek filtrów, wyszukiwarka z debounce, sortowanie, region <code>aria-live</code> z podsumowaniem</li>
+        <li>Czytnik SSE po <code>fetch</code>, backoff, fallback do odpytywania co 15 s, wskaźnik „Live updates on”</li>
+        <li>Panele AI: szkic z opisu, podział na podzadania, sugestie, dzienne podsumowanie, wszystko do zatwierdzenia</li>
+      </ul>
+      <h3>Docker i CI</h3>
+      <ul class="plain">
+        <li><code>docker compose --profile ai up</code>: db, backend, frontend (nginx z CSP i limitami), ai-agent, ollama, ollama-pull z rozgrzewaniem</li>
+        <li><code>docker-compose.gpu.yml</code>: na GTX 1060 wywołanie AI trwa ok. 2 s zamiast 6–11 s</li>
+        <li>CI: pytest SQLite, pytest Postgres z próbą migracji w obie strony, ai-agent, Vitest + build</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Wynik testów na <code>main</code></h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Suita</th><th>Komenda</th><th>Wynik</th></tr></thead>
+      <tbody>
+        <tr><td>Backend, tor SQLite</td><td class="num">cd backend && uv run pytest</td><td class="num">700 passed, 29 skipped</td></tr>
+        <tr><td>Backend, tor PostgreSQL</td><td class="num">TEST_DATABASE_URL=... uv run pytest</td><td class="num">728 passed, 1 skipped</td></tr>
+        <tr><td>ai-agent</td><td class="num">cd ai-agent && uv run pytest</td><td class="num">211 passed, 5 skipped (tor live)</td></tr>
+        <tr><td>Frontend, Vitest</td><td class="num">cd frontend && npm test</td><td class="num">186 passed</td></tr>
+        <tr><td>E2E, Playwright</td><td class="num">E2E_BACKEND_PORT=8011 npm run e2e</td><td class="num">12 passed + ai.spec (E2E_AI=1) 1 passed</td></tr>
+        <tr class="total"><td>Razem</td><td></td><td class="num">1 138 testów, 0 failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decyzje podjęte bez pytania</h2>
+  <ul class="plain">
+    <li><strong>SSE zamiast WebSocket</strong> dla aktualizacji na żywo: jednokierunkowe, zwykłe HTTP, nginx bez upgrade'u; token w nagłówku dzięki własnemu czytnikowi po <code>fetch</code>.</li>
+    <li><strong>Testy backendu na SQLite w pamięci</strong> jako tor domyślny, żeby <code>uv run pytest</code> działało bez Dockera; identyczna suita na PostgreSQL w CI i QA. Cena: dwa błędy widoczne tylko na Postgresie, oba złapane przez drugi tor.</li>
+    <li><strong>Jedna migracja bazowa</strong> z całym docelowym schematem zamiast migracji per slice.</li>
+    <li><strong>Postgres 16 i nginx 1.27</strong> zamiast wersji ze specu, bo takie obrazy były już pobrane; odnotowane w specu.</li>
+    <li><strong>Nowy kod błędu</strong> <code>subtask_list_mismatch</code> dopisany do zamrożonego kontraktu, gdy implementacja ujawniła sprzeczność w specu.</li>
+    <li><strong>Wewnętrzny sekret ai-agenta</strong>: na polecenie usunięty, po wyjaśnieniu przywrócony i wzmocniony. Logowanie użytkowników przez cały czas nietknięte.</li>
+  </ul>
+
+  <h2>Do wzięcia w iteracji 3</h2>
+  <ul class="plain">
+    <li>Brak zdarzeń <code>tag.*</code> w kontrakcie: zmiana nazwy tagu nie trafia do innych kart do najbliższego odświeżenia.</li>
+    <li><code>/api/ai/status.available</code> odzwierciedla osiągalność ai-agenta, nie zgodność sekretu.</li>
+    <li>Broker zdarzeń działa w procesie: jedna replika backendu.</li>
+    <li>Zabezpieczenie przed placeholderami dopasowuje tylko prefiks <code>change-me</code>.</li>
+    <li>Ollama na CPU: 6–20 s na wywołanie; z GPU ok. 2 s. Wykrywanie GPU w Dockerze bywa kapryśne na tej maszynie.</li>
+  </ul>
+
+  <h2>Jak uruchomić</h2>
+  <pre><code># sekrety (backend odmawia startu na pustych lub przykładowych wartościach)
+cp .env.example .env
+sed -i "s/^JWT_SECRET=.*/JWT_SECRET=$(openssl rand -hex 32)/; s/^AI_AGENT_TOKEN=.*/AI_AGENT_TOKEN=$(openssl rand -hex 32)/" .env
+
+# pełny stos z AI (pierwszy start pobiera i rozgrzewa model)
+docker compose --profile ai up -d --build
+# GPU NVIDIA:
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml --profile ai up -d --build
+
+# aplikacja: http://localhost:5173   API: http://localhost:8010/docs
+# bez AI: docker compose up -d --build  (lub AI_ENABLED=false)
+
+# testy
+cd backend && uv run pytest
+cd ai-agent && uv run pytest
+cd frontend && npm test && npm run build
+cd frontend && E2E_BACKEND_PORT=8011 npm run e2e</code></pre>
+
+  <footer>
+    <p>Todo App, iteracja 2. Wygenerowano 3 września 2026 z historii repozytorium na gałęzi <span class="mono">main</span> (<span class="mono">c7892db</span>).</p>
+    <p>Specyfikacje: <span class="mono">docs/specs/iteration-2-master.md</span> i cztery pliki <span class="mono">iteration-2-slice-*.md</span>. Kronika iteracji 1: <span class="mono">docs/reports/iteration-1-history.html</span>.</p>
+  </footer>
+</div>

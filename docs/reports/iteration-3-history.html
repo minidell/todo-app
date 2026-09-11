@@ -1,0 +1,268 @@
+<title>Kronika iteracji 3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F4F6F8; --surface: #FFFFFF; --surface-2: #EAEEF2;
+    --ink: #1A2230; --ink-2: #4A5568; --ink-3: #7B8794; --line: #D6DCE3;
+    --accent: #0E7C72; --accent-ink: #0B5F58; --accent-soft: #D9F0EC;
+    --warn: #B4600A; --warn-soft: #FBE9D3; --ok: #2F7A3E; --ok-soft: #DDF1E0;
+    --bad: #B42318; --bad-soft: #FDE2E0;
+    --frontend: #C2410C; --qa: #0B7C9E; --review: #5B6B7F; --lead: #1A2230;
+    --code-bg: #1E2530; --code-ink: #E6EBF1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+      --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+      --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+      --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+      --bad: #F08A80; --bad-soft: #3F1B18;
+      --frontend: #F0865A; --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3;
+      --code-bg: #0D1117; --code-ink: #DCE3EB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+    --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+    --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+    --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+    --bad: #F08A80; --bad-soft: #3F1B18;
+    --frontend: #F0865A; --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3;
+    --code-bg: #0D1117; --code-ink: #DCE3EB;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 6px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 12px; }
+  .lede { font-size: 18px; color: var(--ink-2); margin-top: 16px; max-width: 62ch; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 32px; }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .l { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 34px; } }
+  .chip { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; white-space: nowrap; color: #fff; line-height: 1.5; }
+  .chip.frontend { background: var(--frontend); } .chip.qa { background: var(--qa); } .chip.review { background: var(--review); } .chip.lead { background: var(--lead); color: var(--bg); }
+  .verdict { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .verdict.ok { background: var(--ok-soft); color: var(--ok); } .verdict.warn { background: var(--warn-soft); color: var(--warn); } .verdict.bad { background: var(--bad-soft); color: var(--bad); }
+  .phase { margin-top: 36px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+  .phase-head h3 { margin: 0; }
+  .phase-head .span { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .phase-note { color: var(--ink-2); font-size: 15px; margin: 12px 0 6px; max-width: 70ch; }
+  .events { list-style: none; margin: 0; padding: 0; }
+  .events li { display: grid; grid-template-columns: 72px 92px 1fr; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .events li:last-child { border-bottom: 0; }
+  .events .time { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .events .msg { font-size: 15px; }
+  .events .msg .hash { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); margin-left: 8px; }
+  .events .msg em { color: var(--ink-2); }
+  @media (max-width: 560px) { .events li { grid-template-columns: 64px 1fr; } .events .msg { grid-column: 1 / -1; } }
+  .tbl-wrap { overflow-x: auto; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--ink); }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; max-width: 70ch; }
+  ul.plain li { margin-bottom: 6px; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; margin: 20px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout strong { font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+  .beforeafter { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0 8px; }
+  @media (max-width: 640px) { .beforeafter { grid-template-columns: 1fr; } }
+  .ba { border: 1px solid var(--line); border-radius: 6px; background: var(--surface); padding: 12px 14px; font-size: 14px; }
+  .ba .t { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 8px; }
+  .ba ul { margin: 0; padding-left: 18px; }
+  .ba li { margin-bottom: 4px; }
+  footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; }
+  footer p { margin: 0 0 4px; }
+</style>
+
+<div class="page">
+  <div class="eyebrow">Todo App · iteracja 3 · 3 września 2026</div>
+  <h1>Kronika iteracji 3</h1>
+  <p class="lede">Krótka iteracja o jednym celu: interfejs, który po dwóch iteracjach funkcji „zlewał się i nie było wiadomo, co jest co”, miał stać się czytelny i przejrzysty. Jeden agent implementujący, dwie rundy recenzji, jedno QA, bez przerw na limity.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v accent">55 min</div><div class="l">czas netto od polecenia do scalenia i przebudowy podglądu, bez przerw</div></div>
+    <div class="stat"><div class="v">20</div><div class="l">commitów: 13 frontendowych, 7 aktualizacji dashboardu, 1 scalenie</div></div>
+    <div class="stat"><div class="v">+22</div><div class="l">testów Vitest (186 → 208); E2E 12/12 w czterech przebiegach</div></div>
+    <div class="stat"><div class="v">2</div><div class="l">blokery z recenzji, oba naprawione z testem regresyjnym</div></div>
+  </div>
+
+  <h2>Zakres</h2>
+  <p>Zlecenie brzmiało: „popraw ten frontend, bo wszystko się zlewa i nie wiadomo co jest co; ma być czytelny i przejrzysty”. Zrzut ekranu potwierdził diagnozę: każda kontrolka miała tę samą wagę wizualną (kilkadziesiąt identycznych obramowanych przycisków), pola priorytetu, terminu i tagów stały na równi z polem tytułu, filtry zajmowały jedną trzecią strony nad listą, każdy wiersz zadania miał pięć równorzędnych przycisków łamiących się w losowych miejscach, chipy tagów pływały pod wierszami, a pomocnicy AI i dzienne podsumowanie wisiały oderwane na dole.</p>
+  <p>Iteracja objęła wyłącznie warstwę prezentacji. Żaden endpoint, żaden kontrakt API ani logika stanu w aplikacji nie zmieniły się; recenzent potwierdził, że warstwa stanu w <code>App.tsx</code> jest bajt w bajt taka sama.</p>
+
+  <div class="beforeafter">
+    <div class="ba"><div class="t">Przed</div><ul>
+      <li>Wszystko w jednej kolumnie, bez powierzchni i rytmu odstępów</li>
+      <li>Przełącznik list jako <code>select</code> z trzema przyciskami obok</li>
+      <li>Filtry nad listą, zawsze rozwinięte</li>
+      <li>Wiersz zadania: checkbox, tytuł, plakietka, termin, „Show”, „Split into subtasks”, „Suggest priority &amp; tags”, „Edit”, „Delete”</li>
+      <li>„AI helpers” i „Today at a glance” jako osobne sekcje na dole strony</li>
+    </ul></div>
+    <div class="ba"><div class="t">Po</div><ul>
+      <li>Dwie kolumny od 1024 px: pasek boczny 280 px i kolumna główna; na telefonie jedna kolumna</li>
+      <li>Listy jako nawigacja z licznikami i podświetleniem, menu „⋯” przy każdej</li>
+      <li>Filtry w zatytułowanej grupie w pasku bocznym, na telefonie zwinięte pod „Show”</li>
+      <li>Karta zadania: tytuł, kolorowa plakietka priorytetu, termin, tagi, pasek postępu podzadań, akcje Edit / Delete / menu AI</li>
+      <li>Karta dodawania z zakładkami „Add / Draft with AI” i „More options”; „Today at a glance” jako zwinięta karta u góry</li>
+    </ul></div>
+  </div>
+
+  <h2>Jak pracował zespół</h2>
+  <p>Ten sam pipeline co wcześniej, w wersji dla jednego zadania: lider zrobił zrzut ekranu i napisał brief projektowy z konkretnymi decyzjami układu, jeden agent frontendowy (Opus) przebudował powłokę we własnym worktree, recenzent i QA pracowali równolegle, poprawki wróciły do agenta, recenzent potwierdził je w drugiej rundzie. Nowość z tej iteracji: <code>DASHBOARD.md</code> jako wewnętrzna Jira, aktualizowany przy każdej dyspozycji i raporcie, oraz reguła commitów <code>wip</code> przed dłuższymi krokami, widoczna w historii poniżej.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Model</th><th>Commity</th><th>Praca</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip lead">lead</span></td><td>Fable</td><td class="num">7 + 1 scalenie</td><td>zrzut ekranu i diagnoza, brief projektowy, dyspozycja, dashboard, scalenie, przebudowa podglądu</td></tr>
+        <tr><td><span class="chip frontend">frontend</span></td><td>Opus</td><td class="num">13</td><td>nowa powłoka: <code>ListNav</code>, <code>FilterBar</code>, <code>TodoComposer</code>, <code>MenuButton</code>, karty zadań, wspólny słownik stylów w <code>styles.ts</code>; testy przepisane, nie usunięte; poprawki po recenzji</td></tr>
+        <tr><td><span class="chip review">reviewer</span></td><td>Opus</td><td class="num">—</td><td>dwie rundy: porównanie liczby asercji per plik z <code>main</code>, kontrast liczony w sRGB, kontrakt klawiaturowy menu, efekt fokusu</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td>Sonnet</td><td class="num">—</td><td>E2E ×2, przejście klawiaturą przez nawigację, zakładki i menu, widok 390 px, kontrasty (z poprawką własnego narzędzia na kolory <code>oklch</code>)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Oś czasu</h2>
+  <p>Czasy lokalne (CEST). Wszystkie commity iteracji.</p>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Diagnoza i dyspozycja</h3><span class="span">09:37 – 09:39</span></div>
+    <p class="phase-note">Lider zalogował się na konto demo skryptem Playwright, zasilił dane (zadanie z priorytetem, terminem, tagami i podzadaniami, zadanie zaległe) i zrobił pełnostronicowy zrzut ekranu. Brief dla agenta powstał z tego zrzutu: konkretne decyzje o układzie, a nie „zrób ładniej”.</p>
+    <ul class="events">
+      <li><span class="time">09:39</span><span class="chip lead">lead</span><span class="msg">dashboard: start iteration 3 scope 1 (UI clarity redesign), dispatch frontend<span class="hash">d6e20b1</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Przebudowa</h3><span class="span">09:53 – 10:05</span></div>
+    <p class="phase-note">Dwanaście minut na nową powłokę, dostosowanie testów jednostkowych i E2E do nowego DOM, wersję mobilną i ujednolicenie ekranów logowania. Dwa commity <code>wip</code> zgodnie z nową regułą. Agent sam uruchomił E2E na własnej bazie na porcie 5436, zatrzymując na ten czas kontener frontendu podglądu.</p>
+    <ul class="events">
+      <li><span class="time">09:53</span><span class="chip frontend">frontend</span><span class="msg">wip redesign the app shell: sidebar + main column<span class="hash">7f5acb6</span></span></li>
+      <li><span class="time">09:57</span><span class="chip frontend">frontend</span><span class="msg">point the Vitest suite at the redesigned DOM <em>· 186 testów, żadna asercja nie wypadła</em><span class="hash">43f4e06</span></span></li>
+      <li><span class="time">09:58</span><span class="chip frontend">frontend</span><span class="msg">wip point the Playwright specs at the redesigned DOM<span class="hash">821132b</span></span></li>
+      <li><span class="time">10:03</span><span class="chip frontend">frontend</span><span class="msg">make the sidebar and the row actions work on a phone<span class="hash">f4acb3d</span></span></li>
+      <li><span class="time">10:05</span><span class="chip frontend">frontend</span><span class="msg">put the sign-in and register screens on the same design <em>· E2E 12/12</em><span class="hash">a3213c1</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Bramki, runda 1</h3><span class="span">10:08 – 10:18</span></div>
+    <ul class="events">
+      <li><span class="time">10:08</span><span class="chip lead">lead</span><span class="msg">dashboard: frontend reported, reviewer + qa dispatched<span class="hash">95cc77b</span></span></li>
+      <li><span class="time">10:16</span><span class="chip review">reviewer</span><span class="msg">Zmiany wymagane: 2 blokery, 4 uwagi niskie, 3 drobiazgi</span></li>
+      <li><span class="time">10:18</span><span class="chip qa">qa</span><span class="msg">PASS: E2E 12/12 ×2, klawiatura, 390 px bez przewijania poziomego, kontrasty ≥ 4,5:1</span></li>
+    </ul>
+    <div class="callout warn"><strong>Bloker 1: efekt „kradnący” fokus.</strong> Po usunięciu listy fokus miał raz wrócić na nową selekcję. Licznik sterujący efektem nigdy się nie zerował, a identyfikator listy był w zależnościach, więc po pierwszym usunięciu efekt odpalał się przy każdej późniejszej zmianie listy, także tej sterowanej zdarzeniem SSE z innej karty, wyrywając kursor z pola dodawania w trakcie pisania. Naprawa: flaga w <code>useRef</code> zużywana jednorazowo, plus test regresyjny, który na starym kodzie pada.</div>
+    <div class="callout warn"><strong>Bloker 2: nowy widget menu bez testów kontraktu klawiaturowego.</strong> 164 linie obsługi Enter, strzałek, Home/End, Escape, Tab i kliknięcia poza menu, a wszystkie istniejące testy klikały myszą. Dopisano 11 testów; przy okazji wyszły dwa realne defekty: Tab usuwał menu z DOM zanim przeglądarka przeniosła fokus, a strzałki na przycisku otwierającym nie działały.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Poprawki i runda 2</h3><span class="span">10:19 – 10:35</span></div>
+    <ul class="events">
+      <li><span class="time">10:19</span><span class="chip frontend">frontend</span><span class="msg">make the post-delete refocus in ListNav a one-shot<span class="hash">9249706</span></span></li>
+      <li><span class="time">10:21</span><span class="chip frontend">frontend</span><span class="msg">nail down the MenuButton keyboard contract <em>· 11 testów</em><span class="hash">fcd0c01</span></span></li>
+      <li><span class="time">10:22</span><span class="chip frontend">frontend</span><span class="msg">component tests for the composer, its disclosure and the filter group<span class="hash">017b8d3</span></span></li>
+      <li><span class="time">10:23</span><span class="chip frontend">frontend</span><span class="msg">explain the inert Generate summary button<span class="hash">8a91e3d</span></span></li>
+      <li><span class="time">10:25</span><span class="chip frontend">frontend</span><span class="msg">drop the button size overrides that never applied<span class="hash">19d9887</span></span></li>
+      <li><span class="time">10:26</span><span class="chip frontend">frontend</span><span class="msg">put the visible label first in the AI menu item names <em>· WCAG 2.5.3</em><span class="hash">cf3f4ea</span></span></li>
+      <li><span class="time">10:26</span><span class="chip frontend">frontend</span><span class="msg">truncate a long identity in the top bar<span class="hash">1c8d2ab</span></span></li>
+      <li><span class="time">10:30</span><span class="chip frontend">frontend</span><span class="msg">keep each button variant's own padding <em>· agent sam wykrył, że poprzedni commit zmienił rozmiary trzech wariantów, i cofnął to</em><span class="hash">b736b88</span></span></li>
+      <li><span class="time">10:34</span><span class="chip review">reviewer</span><span class="msg">Zatwierdzone: oba blokery naprawione, nie zamaskowane; test regresyjny pada na starym kodzie</span></li>
+      <li><span class="time">10:35</span><span class="chip lead">lead</span><span class="msg">Scalenie na <code>main</code> (<span class="mono">54a18d8</span>), przebudowa kontenera frontendu, koniec pomiaru</span></li>
+    </ul>
+  </div>
+
+  <h2>Bramki jakości</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Bramka</th><th>Werdykt</th><th>Znalezisko</th><th>Waga</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip review">reviewer</span> r1</td><td><span class="verdict warn">Zmiany</span></td><td>Efekt przywracania fokusu po usunięciu listy odpalał się przy każdej późniejszej zmianie selekcji</td><td><span class="verdict bad">bloker</span></td></tr>
+        <tr><td><span class="chip review">reviewer</span> r1</td><td></td><td>Widget <code>MenuButton</code> bez testów klawiatury; Tab odmontowywał menu przed przeniesieniem fokusu; brak strzałek na przycisku otwierającym</td><td><span class="verdict bad">bloker</span></td></tr>
+        <tr><td><span class="chip review">reviewer</span> r1</td><td></td><td>Brak wyjaśnienia nieaktywnego „Generate summary”; martwe nadpisania rozmiaru przycisków; nazwa pozycji menu bez widocznej etykiety; długi e-mail w nagłówku mógł wymusić przewijanie</td><td><span class="verdict warn">niskie ×4</span></td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td><span class="verdict ok">Pass</span></td><td>E2E 12/12 dwa razy; klawiatura przez nawigację, zakładki, oba menu i formularz zmiany nazwy; 390 px: <code>scrollWidth</code> 390; cztery próbki kontrastu ≥ 4,5:1 po poprawieniu własnego licznika na kolory <code>oklch</code></td><td>—</td></tr>
+        <tr><td><span class="chip review">reviewer</span> r2</td><td><span class="verdict ok">Approve</span></td><td>Wszystkie sześć pozycji potwierdzone; jedna uwaga informacyjna: pole tytułu renderuje się w 16 px zamiast 14 px, co uznano za poprawę</td><td>—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Co powstało</h2>
+  <div class="cols">
+    <div>
+      <h3>Nowe komponenty</h3>
+      <ul class="plain">
+        <li><code>ListNav</code>: nawigacja list z <code>aria-current</code>, licznikami, menu akcji i formularzami inline</li>
+        <li><code>FilterBar</code>: grupa filtrów z przełącznikiem Show/Hide na małych ekranach</li>
+        <li><code>TodoComposer</code>: karta dodawania z <code>tablist</code> (roving tabindex) i trybem AI</li>
+        <li><code>MenuButton</code>: menu WAI-ARIA z pełną obsługą klawiatury i zwrotem fokusu przed akcją</li>
+        <li><code>styles.ts</code>: wspólny słownik klas (powierzchnie, warianty przycisków, pola, pierścienie fokusu)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Zachowane bez zmian</h3>
+      <ul class="plain">
+        <li>Cała logika stanu: odświeżanie po zdarzeniach SSE, filtry, tworzenie z odświeżeniem, zatwierdzanie szkiców AI, wygaśnięcie sesji</li>
+        <li>Wzorce dostępności z iteracji 2: <code>aria-busy</code> zamiast <code>disabled</code>, <code>role="alert"</code> z przeniesieniem fokusu, widoczne pierścienie fokusu, słowo obok koloru</li>
+        <li>Nazwy dostępne używane przez testy E2E, <code>data-testid="todo-row"</code>, <code>aria-label="Todos"</code></li>
+        <li>Zero nowych zależności, zero zmian w backendzie</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Wynik testów na <code>main</code></h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Suita</th><th>Komenda</th><th>Wynik</th></tr></thead>
+      <tbody>
+        <tr><td>Frontend, Vitest</td><td class="num">cd frontend && npm test</td><td class="num">208 passed (było 186)</td></tr>
+        <tr><td>Frontend, build</td><td class="num">cd frontend && npm run build</td><td class="num">tsc -b + vite build OK</td></tr>
+        <tr><td>E2E, Playwright</td><td class="num">E2E_BACKEND_PORT=8011 npm run e2e</td><td class="num">12 passed + 1 skipped (ai.spec bez E2E_AI), ×4</td></tr>
+        <tr><td>Backend, ai-agent</td><td class="num">bez zmian</td><td class="num">700 / 211 passed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decyzje podjęte bez pytania</h2>
+  <ul class="plain">
+    <li><strong>Zakładki „Add / Draft with AI”</strong> zamiast osobnej sekcji AI: tryb AI to inny sposób dodania zadania, więc mieszka w karcie dodawania. Przełączenie zakładki odrzuca niezatwierdzony szkic; zaakceptowane jako konsekwencja, zapisane w backlogu.</li>
+    <li><strong>Menu AI w wierszu</strong> zamiast dwóch pełnych przycisków; nazwy pozycji z widoczną etykietą na początku, zgodnie z WCAG 2.5.3.</li>
+    <li><strong>Nazwa listy zadań „Todos”</strong> jako <code>aria-label</code>, bo strona ma teraz kilka list (nawigacja, chipy, podzadania).</li>
+    <li><strong>Iteracja zamknięta na jednym zadaniu</strong> na polecenie użytkownika; pozostałe pozycje backlogu przeniesione do iteracji 4.</li>
+  </ul>
+
+  <h2>Do wzięcia w iteracji 4</h2>
+  <ul class="plain">
+    <li>Przełączenie zakładek karty dodawania traci niezatwierdzony szkic AI lub wpisany tytuł.</li>
+    <li>Ścieżka menu AI na żywym modelu nie była ćwiczona w QA tej iteracji (status AI był zamockowany); do objęcia przy następnym przebiegu <code>E2E_AI=1</code>.</li>
+    <li>Zaległości z iteracji 2: zdarzenia <code>tag.*</code>, wykrywanie niezgodności sekretu w statusie AI, broker zdarzeń w wielu replikach, pierwszy przebieg CI po dodaniu remote.</li>
+  </ul>
+
+  <h2>Jak uruchomić</h2>
+  <pre><code>docker compose --profile ai up -d --build     # http://localhost:5173, konto demo w DASHBOARD.md
+cd frontend && npm test && npm run build
+cd frontend && E2E_BACKEND_PORT=8011 npm run e2e</code></pre>
+
+  <footer>
+    <p>Todo App, iteracja 3. Wygenerowano 3 września 2026 z historii repozytorium na gałęzi <span class="mono">main</span> (<span class="mono">54a18d8</span>).</p>
+    <p>Stan projektu: <span class="mono">DASHBOARD.md</span>. Poprzednie kroniki: <span class="mono">docs/reports/iteration-1-history.html</span>, <span class="mono">docs/reports/iteration-2-history.html</span>.</p>
+  </footer>
+</div>

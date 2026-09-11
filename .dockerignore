@@ -1,0 +1,27 @@
+# Repo-root ignore file. Only used by builds whose context is the repo root
+# (currently: frontend, since its Dockerfile also needs docker/nginx.conf —
+# see frontend/Dockerfile and D4 in docs/specs/iteration-2-slice-1-persistence-foundation.md).
+# The backend build uses context ./backend and its own backend/.dockerignore instead.
+
+.git/
+.claude/
+docs/
+README.md
+
+node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/playwright-report/
+frontend/test-results/
+frontend/e2e/.auth/
+frontend/coverage/
+
+backend/.venv/
+backend/__pycache__/
+backend/**/__pycache__/
+backend/.pytest_cache/
+backend/.ruff_cache/
+
+.env
+.env.*
+!.env.example

@@ -1,0 +1,267 @@
+<title>Kronika iteracji 4</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F4F6F8; --surface: #FFFFFF; --surface-2: #EAEEF2;
+    --ink: #1A2230; --ink-2: #4A5568; --ink-3: #7B8794; --line: #D6DCE3;
+    --accent: #0E7C72; --accent-ink: #0B5F58; --accent-soft: #D9F0EC;
+    --warn: #B4600A; --warn-soft: #FBE9D3; --ok: #2F7A3E; --ok-soft: #DDF1E0;
+    --bad: #B42318; --bad-soft: #FDE2E0;
+    --planner: #6D4FC2; --backend: #2D5BD1; --frontend: #C2410C; --devops: #2F855A;
+    --qa: #0B7C9E; --review: #5B6B7F; --lead: #1A2230; --code-bg: #1E2530; --code-ink: #E6EBF1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+      --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+      --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+      --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+      --bad: #F08A80; --bad-soft: #3F1B18;
+      --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+      --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+    --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+    --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+    --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+    --bad: #F08A80; --bad-soft: #3F1B18;
+    --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+    --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 6px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 12px; }
+  .lede { font-size: 18px; color: var(--ink-2); margin-top: 16px; max-width: 62ch; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 32px; }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .l { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 34px; } }
+  .chip { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; white-space: nowrap; color: #fff; line-height: 1.5; }
+  .chip.planner { background: var(--planner); } .chip.backend { background: var(--backend); } .chip.frontend { background: var(--frontend); }
+  .chip.devops { background: var(--devops); } .chip.qa { background: var(--qa); } .chip.review { background: var(--review); } .chip.lead { background: var(--lead); color: var(--bg); }
+  .verdict { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .verdict.ok { background: var(--ok-soft); color: var(--ok); } .verdict.warn { background: var(--warn-soft); color: var(--warn); } .verdict.bad { background: var(--bad-soft); color: var(--bad); }
+  .phase { margin-top: 36px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+  .phase-head h3 { margin: 0; }
+  .phase-head .span { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .phase-note { color: var(--ink-2); font-size: 15px; margin: 12px 0 6px; max-width: 70ch; }
+  .events { list-style: none; margin: 0; padding: 0; }
+  .events li { display: grid; grid-template-columns: 72px 92px 1fr; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .events li:last-child { border-bottom: 0; }
+  .events .time { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .events .msg { font-size: 15px; }
+  .events .msg .hash { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); margin-left: 8px; }
+  .events .msg em { color: var(--ink-2); }
+  @media (max-width: 560px) { .events li { grid-template-columns: 64px 1fr; } .events .msg { grid-column: 1 / -1; } }
+  .pause { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 10px 12px; margin: 10px 0; background: var(--warn-soft); border-radius: 6px; font-size: 14px; color: var(--warn); }
+  .pause .time { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .tbl-wrap { overflow-x: auto; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--ink); }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; max-width: 70ch; }
+  ul.plain li { margin-bottom: 6px; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; margin: 20px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout strong { font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+  footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; }
+  footer p { margin: 0 0 4px; }
+</style>
+
+<div class="page">
+  <div class="eyebrow">Todo App · iteracja 4 · 3 września 2026</div>
+  <h1>Kronika iteracji 4</h1>
+  <p class="lede">Przegląd zaległości: dziewięć pozycji backlogu z bramek iteracji 2 i 3, rozpisanych przez plannera na dwa równoległe slice'y, zrealizowanych w czterech worktree naraz. Bez przerw na limity sesji, za to z pełnym dyskiem w połowie QA.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v accent">1 h 36 min</div><div class="l">od polecenia do scalenia i przebudowy podglądu; planner szacował 3,5–4,5 h</div></div>
+    <div class="stat"><div class="v">45</div><div class="l">commitów: 35 roboczych i 10 scaleń; 48 plików, +4 133 linii</div></div>
+    <div class="stat"><div class="v">1 741</div><div class="l">testów na main: 927 backend, 553 ai-agent, 247 Vitest, 14 Playwright</div></div>
+    <div class="stat"><div class="v">9 / 9</div><div class="l">pozycji backlogu zamkniętych; IT3-5 czeka na dane od użytkownika</div></div>
+  </div>
+
+  <h2>Zakres</h2>
+  <p>Iteracja 4 nie miała nowego zlecenia funkcjonalnego; zakresem był backlog z dashboardu: zdarzenia <code>tag.*</code> na żywo, wykrywanie niezgodności sekretu w statusie AI, szerszy strażnik placeholderów, jawne ograniczenie brokera do jednej repliki, przypięcie obrazu Ollamy z notką o GPU, daty względne w promptach AI, fokus po usunięciu zadania z klawiatury, zachowanie stanu karty dodawania przy zmianie zakładki oraz test E2E menu AI na żywym modelu. Wyłączona została jedna pozycja: dodanie zdalnego repozytorium i pierwszy przebieg CI na GitHubie, bo wymaga adresu i uprawnień, które ma tylko użytkownik.</p>
+
+  <h2>Jak pracował zespół</h2>
+  <p>Planner zaprojektował każdą pozycję i pociął pracę na slice A (backend, ai-agent, devops, rozłączne drzewa plików) i slice B (frontend), z zamrożonym kontraktem: kształt ramek <code>tag.*</code>, pole <code>reason</code> w statusie AI, endpoint <code>/ai/ping</code>, ustawienie <code>REALTIME_BACKEND</code>. Dzięki temu cztery agenty implementujące wystartowały w tej samej minucie i żaden nie czekał na drugi. Dashboard był aktualizowany przy każdej dyspozycji i raporcie, a reguła commitów <code>wip</code> jest widoczna na osi czasu.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Model</th><th>Commity</th><th>Praca</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip lead">lead</span></td><td>Fable</td><td class="num">8 + 10 scaleń</td><td>dyspozycja, dashboard, rundy poprawek, obejście pełnego dysku, integracja, podgląd</td></tr>
+        <tr><td><span class="chip planner">planner</span></td><td>Opus</td><td class="num">1</td><td>spec z 42 kryteriami, delty kontraktu wpisane do specu głównego, osiem zapisanych decyzji</td></tr>
+        <tr><td><span class="chip backend">backend</span></td><td>Opus</td><td class="num">9</td><td>kolejka utworzonych tagów per żądanie, ramki <code>tag.*</code> po commicie, dwie równoległe sondy statusu AI, strażnik placeholderów, <code>REALTIME_BACKEND</code>, konfiguracja logowania</td></tr>
+        <tr><td><span class="chip backend">backend (ai-agent)</span></td><td>Opus</td><td class="num">6</td><td><code>GET /ai/ping</code>, ta sama tabela placeholderów bajt w bajt, kotwice dat względnych z torem na żywym modelu, wzorzec znaków nazw tagów</td></tr>
+        <tr><td><span class="chip frontend">frontend</span></td><td>Opus</td><td class="num">7</td><td>fokus po usunięciu (trzy strażniki), oba panele karty dodawania zamontowane, obsługa ramek tagów z naprawą filtra, komunikaty dla <code>reason</code></td></tr>
+        <tr><td><span class="chip devops">devops</span></td><td>Sonnet</td><td class="num">3</td><td>obraz Ollamy przypięty digestem z cache przez jedną kotwicę YAML, sekcje README o skalowaniu, GPU i statusie AI</td></tr>
+        <tr><td><span class="chip review">reviewer</span> / <span class="chip review">security</span></td><td>Opus</td><td class="num">—</td><td>jedna runda każdy, obie zatwierdzone; sprawdzenie programowe, że tabele strażnika w obu serwisach są identyczne</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td>Sonnet</td><td class="num">1</td><td>pełny stos, dwa strumienie SSE, macierz statusu AI, Playwright ×2, nowy test menu AI na żywym modelu, sprawdzenie dwóch kart</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Oś czasu</h2>
+  <p>Czasy lokalne (CEST). Pominięto commity samego dashboardu.</p>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Planowanie</h3><span class="span">11:49 – 12:02</span></div>
+    <ul class="events">
+      <li><span class="time">11:49</span><span class="chip lead">lead</span><span class="msg">Start pomiaru, dyspozycja plannera z backlogiem jako zakresem</span></li>
+      <li><span class="time">12:02</span><span class="chip planner">planner</span><span class="msg">iteration 4 backlog-sweep spec + master contract deltas<span class="hash">8c6e79e</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Implementacja, cztery worktree naraz</h3><span class="span">12:05 – 12:32</span></div>
+    <p class="phase-note">Dwadzieścia siedem minut od pierwszego do ostatniego commitu implementacji. Frontend zdążył uruchomić E2E na własnej bazie; ai-agent przeszedł tor na żywym modelu z wynikiem 5/5 dla dat względnych dopiero po przeniesieniu bloku dat za notatkę użytkownika (wcześniej 2/5 i 3/5).</p>
+    <ul class="events">
+      <li><span class="time">12:05</span><span class="chip backend">backend</span><span class="msg">ai-agent add GET /ai/ping behind the internal token<span class="hash">9ea1745</span></span></li>
+      <li><span class="time">12:05</span><span class="chip devops">devops</span><span class="msg">pin Ollama image + REALTIME_BACKEND in compose/.env.example<span class="hash">e19cc80</span></span></li>
+      <li><span class="time">12:08</span><span class="chip backend">backend</span><span class="msg">report which tags a request inserted (get_or_create_reporting + outbox)<span class="hash">2e1c657</span></span></li>
+      <li><span class="time">12:09</span><span class="chip frontend">frontend</span><span class="msg">B2 composer keeps its state across tab switches<span class="hash">b525def</span></span></li>
+      <li><span class="time">12:11</span><span class="chip backend">backend</span><span class="msg">wip live relative-date lane <em>· commit wip przed długim krokiem</em><span class="hash">5198b49</span></span></li>
+      <li><span class="time">12:12</span><span class="chip backend">backend</span><span class="msg">publish tag.created, tag.updated and tag.deleted frames<span class="hash">51d9ede</span></span></li>
+      <li><span class="time">12:13</span><span class="chip frontend">frontend</span><span class="msg">B1 keyboard focus after deleting a todo<span class="hash">0803846</span></span></li>
+      <li><span class="time">12:15</span><span class="chip frontend">frontend</span><span class="msg">B3 apply tag.* frames with the stale-filter repair<span class="hash">f61eccf</span></span></li>
+      <li><span class="time">12:16</span><span class="chip backend">backend</span><span class="msg">tell a token mismatch apart from an unreachable ai-agent<span class="hash">4190bde</span></span></li>
+      <li><span class="time">12:17</span><span class="chip frontend">frontend</span><span class="msg">E2E green: 13 passed, ai.spec skipped<span class="hash">24b9017</span></span></li>
+      <li><span class="time">12:25</span><span class="chip backend">backend</span><span class="msg">ai-agent put the DATES block after the note: live lane 5/5<span class="hash">23716d8</span></span></li>
+      <li><span class="time">12:32</span><span class="chip backend">backend</span><span class="msg">align the placeholder table and corpus with ai-agent, stop echoing rejects <em>· dwie uwagi krzyżowe od agenta ai-agent</em><span class="hash">1d020b3</span></span></li>
+    </ul>
+    <div class="callout"><strong>Koordynacja między worktree bez kontaktu bezpośredniego.</strong> Agent ai-agenta zauważył, że rozszerzona tabela placeholderów odrzuca literały testowe backendu (<code>"x" * 40</code>) i że pydantic dopisuje odrzuconą wartość do komunikatu błędu, więc prawdziwy sekret bliski wzorca trafiłby do logu. Obie uwagi poszły przez lidera do agenta backendu, który wprowadził <code>hide_input_in_errors</code> i skopiował tabelę bajt w bajt.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Bramki i poprawki</h3><span class="span">12:35 – 12:46</span></div>
+    <ul class="events">
+      <li><span class="time">12:40</span><span class="chip review">security</span><span class="msg">Zatwierdzone, bez ustaleń średnich lub wyższych; cztery niskie</span></li>
+      <li><span class="time">12:44</span><span class="chip review">reviewer</span><span class="msg">Zatwierdzone: wyścig w kolejce, kolejność ramek, izolacja, niezmiennik statusu i strażniki fokusu potwierdzone testami, które padają na złej implementacji; trzy niskie</span></li>
+      <li><span class="time">12:45</span><span class="chip backend">backend</span><span class="msg">ai-agent drop the xxx placeholder prefix, constrain TagName charset<span class="hash">fcccb51</span></span></li>
+      <li><span class="time">12:46</span><span class="chip backend">backend</span><span class="msg">drop the xxx placeholder prefix, align the guard copy<span class="hash">5546233</span></span></li>
+      <li><span class="time">12:46</span><span class="chip devops">devops</span><span class="msg">de-duplicate the pinned Ollama digest via a YAML anchor<span class="hash">017020d</span></span></li>
+      <li><span class="time">12:46</span><span class="chip frontend">frontend</span><span class="msg">one fetch per tag.* frame that repairs the filter<span class="hash">f49d652</span></span></li>
+    </ul>
+    <div class="pause"><span class="time">12:36</span><span>Bloker środowiskowy: partycja <code>/</code> zapełniona do 100%. QA padło na <code>npm ci</code>. Lider zwolnił ~600 MB wewnątrz projektu (zależności zakończonych worktree, zbędny pełny Chromium) i uruchomił QA ponownie w drzewie głównym, gdzie zależności i przeglądarki już były, a obrazy Dockera budują się na innej partycji. Recenzje i poprawki biegły w tym czasie dalej, więc czasu nie odjęto.</span></div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>QA i zamknięcie</h3><span class="span">12:50 – 13:25</span></div>
+    <p class="phase-note">QA na pełnym stosie: macierz statusu AI (zły token → <code>auth_failed</code> z jednym ostrzeżeniem, agent zatrzymany → <code>unreachable</code>, AI wyłączone → <code>disabled</code>), dwa strumienie SSE z izolacją użytkowników, zmiana nazwy tagu widoczna w drugiej karcie bez odświeżenia, Playwright ×2 i nowy test menu AI na żywym modelu ×2. Jedno kryterium padło: komunikat INFO o brokerze w jednym procesie nigdy nie trafiał do logu kontenera.</p>
+    <ul class="events">
+      <li><span class="time">13:15</span><span class="chip qa">qa</span><span class="msg">add the ai-menu E2E spec (IT4-2)<span class="hash">236861b</span></span></li>
+      <li><span class="time">13:21</span><span class="chip backend">backend</span><span class="msg">configure application logging at startup<span class="hash">7b064d9</span></span></li>
+      <li><span class="time">13:25</span><span class="chip lead">lead</span><span class="msg">Scalenie na <code>main</code> (<span class="mono">ec60fac</span>), przebudowa podglądu, linia INFO widoczna w logu kontenera, koniec pomiaru</span></li>
+    </ul>
+    <div class="callout warn"><strong>Błąd, którego testy nie mogły złapać.</strong> Aplikacja nie konfigurowała logowania Pythona, a uvicorn konfiguruje tylko własne loggery, więc każde <code>logger.info</code> z <code>app.*</code> ginęło w kontenerze. Test kryterium przechodził, bo <code>caplog.at_level</code> wymuszał poziom. Naprawa: ustawienie <code>LOG_LEVEL</code>, idempotentne <code>configure_logging</code> w <code>create_app</code>, które nie nadpisuje handlerów uvicorna, i testy bez wymuszania poziomu.</div>
+  </div>
+
+  <h2>Bramki jakości</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Bramka</th><th>Werdykt</th><th>Znalezisko</th><th>Waga</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip review">security</span></td><td><span class="verdict ok">Approve</span></td><td>Prefiks <code>xxx</code> w strażniku odrzucał sekrety base64 zaczynające się od <code>Xxx</code> (5 na 200 000); rozbieżny docstring dwóch kopii strażnika; brak wzorca znaków dla nazw tagów w ai-agencie; brak blokady przy chybieniu cache zdrowia AI</td><td><span class="verdict warn">niskie ×4</span></td></tr>
+        <tr><td><span class="chip review">reviewer</span></td><td><span class="verdict ok">Approve</span></td><td>Digest Ollamy zduplikowany w dwóch usługach compose; podwójny fetch przy naprawie filtra; rozbieżny docstring</td><td><span class="verdict warn">niskie ×3</span></td></tr>
+        <tr><td><span class="chip qa">qa</span> #1</td><td><span class="verdict bad">Blocked</span></td><td>Dysk <code>/</code> pełny; backend 918 i ai-agent 543 testów przeszły przed zatrzymaniem</td><td>środowisko</td></tr>
+        <tr><td><span class="chip qa">qa</span> #2</td><td><span class="verdict ok">Pass</span></td><td>41/42 kryteriów pod prawdziwymi warunkami; komunikat INFO nie docierał do logu kontenera (naprawione przed scaleniem); „in 10 days” rozwiązane przez model o 3 dni za wcześnie w ad-hoc teście</td><td><span class="verdict warn">high ×1</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Co powstało</h2>
+  <div class="cols">
+    <div>
+      <h3>Backend i ai-agent</h3>
+      <ul class="plain">
+        <li>Ramki <code>tag.created / updated / deleted</code> w strumieniu SSE, tworzone z kolejki per żądanie i publikowane po commicie, bez rozgłaszania per zadanie</li>
+        <li>Status AI z polem <code>reason</code>: <code>disabled</code>, <code>unreachable</code>, <code>auth_failed</code>, <code>model_unavailable</code>; dwie równoległe sondy pod tym samym 10-sekundowym cache</li>
+        <li><code>GET /ai/ping</code> za wspólnym sekretem; wzorzec znaków dla <code>known_tags</code></li>
+        <li>Strażnik placeholderów: te same trzy tabele w obu serwisach, <code>hide_input_in_errors</code>, korpus testowy współdzielony</li>
+        <li><code>REALTIME_BACKEND=memory</code> jako jedyna wartość, komunikat przy starcie; <code>LOG_LEVEL</code> i konfiguracja logowania</li>
+        <li>Kotwice dat względnych w promptcie (dni tygodnia, „next week”, „in N days”), tor na żywym modelu 5/5</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Frontend i Docker</h3>
+      <ul class="plain">
+        <li>Fokus po usunięciu zadania: następny wiersz, poprzedni, pole dodawania; trzy strażniki przeciw kradzieży fokusu z iteracji 3</li>
+        <li>Oba panele karty dodawania zamontowane, nieaktywny ukryty; szkic AI i wpisany tytuł przeżywają zmianę zakładki</li>
+        <li>Ramki tagów aktualizują chipy i naprawiają aktywny filtr po zmianie nazwy lub usunięciu tagu</li>
+        <li>Komunikaty dla każdego <code>reason</code>, bez nazw hostów i zmiennych</li>
+        <li>Nowy test E2E <code>ai-menu.spec.ts</code>: podział na podzadania i sugestie z menu wiersza na żywym modelu</li>
+        <li>Obraz Ollamy przypięty digestem przez jedną kotwicę YAML, <code>CUDA_VISIBLE_DEVICES</code> w override GPU, README o skalowaniu i GPU</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Wynik testów na <code>main</code></h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Suita</th><th>Komenda</th><th>Wynik</th></tr></thead>
+      <tbody>
+        <tr><td>Backend, tor SQLite</td><td class="num">cd backend && uv run pytest</td><td class="num">927 passed, 30 skipped</td></tr>
+        <tr><td>Backend, tor PostgreSQL</td><td class="num">TEST_DATABASE_URL=... uv run pytest</td><td class="num">942 passed, 1 skipped</td></tr>
+        <tr><td>ai-agent</td><td class="num">cd ai-agent && uv run pytest</td><td class="num">553 passed, 7 skipped; tor live: daty 5/5</td></tr>
+        <tr><td>Frontend, Vitest</td><td class="num">cd frontend && npm test</td><td class="num">247 passed</td></tr>
+        <tr><td>E2E, Playwright</td><td class="num">npm run e2e · E2E_AI=1 ai-menu.spec</td><td class="num">13 passed + 1 skipped ×2 · 2 passed ×2</td></tr>
+        <tr class="total"><td>Razem</td><td></td><td class="num">1 741 testów, 0 failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decyzje podjęte bez pytania</h2>
+  <ul class="plain">
+    <li><strong>Brak Redisa.</strong> Broker zostaje w procesie; <code>REALTIME_BACKEND</code> przyjmuje tylko <code>memory</code>, a README mówi wprost o jednej replice. Wprowadzenie kolejki zewnętrznej bez potrzeby skalowania byłoby kosztem bez zysku.</li>
+    <li><strong>Prefiks <code>xxx</code> usunięty ze strażnika</strong> po audycie: dawał fałszywe trafienia na sekretach base64 i przywracał efekt reguły niskiej entropii, którą spec odrzucił.</li>
+    <li><strong>Blok dat po notatce użytkownika</strong> w promptcie: jedyna kolejność, przy której model 3B rozwiązuje daty względne; audyt uznał, że nie pogarsza to odporności na wstrzyknięcia.</li>
+    <li><strong>QA w drzewie głównym</strong> zamiast w worktree, gdy dysk był pełny; wyjątek od zasady izolacji, odnotowany w dashboardzie.</li>
+    <li><strong>Digest zamiast tagu wersji</strong> dla obrazu Ollamy, bo tylko digest był w lokalnym cache; uruchomienie bez pobierania z sieci zweryfikowane.</li>
+  </ul>
+
+  <h2>Do wzięcia w iteracji 5</h2>
+  <ul class="plain">
+    <li>IT3-5: zdalne repozytorium i pierwszy przebieg CI na GitHubie, po podaniu adresu przez użytkownika.</li>
+    <li><code>LOG_LEVEL</code> do <code>.env.example</code>, compose i tabeli ustawień w specu.</li>
+    <li>Daty względne: „in N days” nadal bywa rozwiązywane z niewłaściwej kotwicy; rozważyć model 7B na GPU albo deterministyczny parser dat przed modelem.</li>
+    <li>Cicha naprawa filtra przy zdalnej zmianie tagu (teraz lista mruga placeholderem ładowania).</li>
+    <li>Blokada przy chybieniu cache zdrowia AI, żeby równoległe wywołania statusu nie dublowały sond.</li>
+  </ul>
+
+  <h2>Jak uruchomić</h2>
+  <pre><code>docker compose --profile ai up -d --build     # http://localhost:5173, konto demo w DASHBOARD.md
+cd backend && uv run pytest
+cd ai-agent && uv run pytest
+cd frontend && npm test && npm run build
+cd frontend && E2E_BACKEND_PORT=8011 npm run e2e
+# menu AI na żywym modelu:
+E2E_AI=1 AI_ENABLED=true AI_AGENT_URL=... AI_AGENT_TOKEN=... npx playwright test e2e/ai-menu.spec.ts</code></pre>
+
+  <footer>
+    <p>Todo App, iteracja 4. Wygenerowano 3 września 2026 z historii repozytorium na gałęzi <span class="mono">main</span> (<span class="mono">ec60fac</span>).</p>
+    <p>Stan projektu: <span class="mono">DASHBOARD.md</span>. Spec: <span class="mono">docs/specs/iteration-4-backlog-sweep.md</span>. Poprzednie kroniki: <span class="mono">docs/reports/iteration-{1,2,3}-history.html</span>.</p>
+  </footer>
+</div>

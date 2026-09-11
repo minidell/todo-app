@@ -1,0 +1,36 @@
+{
+  "$comment": "Seed defaults tuned for FULL AUTO MODE (see CLAUDE.md → 'Auto mode & permissions'). Two tiers only: allow = everything runs silently — file edits, project-root commands, and ALL VCS operations including merge/rebase/push (the project-root boundary itself is enforced by every agent's hard-boundary rule, since Bash rules cannot be path-scoped); deny = standard dangerous commands (sudo, destructive system ops, rm -rf on / or ~, force-push), never to be worked around — a hit is reported as a blocker. There is NO ask tier: nothing prompts the user. Deny wins over allow. /new-project keeps this structure and swaps stack-specific entries.",
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Edit",
+      "Write",
+      "Bash"
+    ],
+    "deny": [
+      "Bash(sudo:*)",
+      "Bash(su:*)",
+      "Bash(shutdown:*)",
+      "Bash(reboot:*)",
+      "Bash(poweroff:*)",
+      "Bash(halt:*)",
+      "Bash(dd:*)",
+      "Bash(mkfs:*)",
+      "Bash(fdisk:*)",
+      "Bash(rm -rf /)",
+      "Bash(rm -rf /:*)",
+      "Bash(rm -rf ~)",
+      "Bash(rm -rf ~:*)",
+      "Bash(rm -rf ~/:*)",
+      "Bash(rm -rf $HOME:*)",
+      "Bash(chmod 777:*)",
+      "Bash(chmod -R 777:*)",
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)",
+      "Bash(docker system prune:*)",
+      "Bash(docker volume prune:*)",
+      "Bash(docker image prune:*)",
+      "Bash(docker container prune:*)"
+    ]
+  }
+}

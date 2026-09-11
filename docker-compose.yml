@@ -1,0 +1,209 @@
+name: todo-app
+
+# Single source of truth for the pinned Ollama image (iteration 4, IT3-6), referenced by
+# both `ollama` and `ollama-pull` below via the `*ollama-image` alias so the two can never
+# drift apart. `OLLAMA_IMAGE` still overrides it for both services at once — Compose
+# interpolates `${...}` after resolving YAML anchors/aliases, so the alias carries the
+# `${OLLAMA_IMAGE:-...}` expression itself, not a pre-interpolated value (verified: an
+# override propagates identically to both services, and `config` stays valid with no
+# `.env` at all — see `.env.example` for the re-pin procedure and README "GPU acceleration").
+x-ollama-image: &ollama-image ${OLLAMA_IMAGE:-ollama/ollama@sha256:020e4134285e2ef4d8fd801234176de3b4faadc992a3eb06c8e66a2f9d4c4ba2}
+
+# Iteration 2 · slice 4: db + backend + frontend start with a plain `docker compose up
+# -d`. The AI trio (ai-agent, ollama, ollama-pull) lives under `profiles: ["ai"]` and
+# stays fully optional — `docker compose up -d` never requires it, never pulls a model,
+# and the app works with AI_ENABLED=false. See docs/specs/iteration-2-master.md §10 and
+# docs/specs/iteration-2-slice-4-realtime-and-ai.md (DEVOPS section) for the target
+# topology this implements.
+#
+# No top-level `networks:` block on purpose — do not add a fixed `name:` for the
+# default network. A fixed name is shared across every compose project on the host
+# (e.g. a QA preview run with `-p todo-app-qa4`), so unrelated stacks join the SAME
+# Docker network and Docker's embedded DNS round-robins service names like `backend`
+# between them (confirmed: a register call meant for a preview landed in a different
+# stack's database). Without a fixed name, Compose scopes the default network per
+# project as `<project>_default`, which keeps every `-p`-named stack isolated.
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-todo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-todo}
+    ports:
+      - "127.0.0.1:${DB_HOST_PORT:-5433}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker/db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "127.0.0.1:${BACKEND_HOST_PORT:-8010}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL in .env}
+      APP_ENV: ${APP_ENV:-dev}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      MAX_BODY_BYTES: ${MAX_BODY_BYTES:-65536}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in .env}
+      JWT_EXPIRES_MINUTES: ${JWT_EXPIRES_MINUTES:-60}
+      TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-true}
+      # iteration 4 (IT3-4): the event broker is in-process, so exactly ONE backend
+      # replica may run. `memory` is the only accepted value — never add
+      # `deploy.replicas` or `--scale backend=N` here, see README "Realtime".
+      REALTIME_BACKEND: ${REALTIME_BACKEND:-memory}
+      AI_ENABLED: ${AI_ENABLED:-true}
+      AI_AGENT_URL: ${AI_AGENT_URL:-http://ai-agent:8000}
+      # `:-` not `:?`: Compose interpolates every service's environment block
+      # regardless of active profile, so a `:?` here would break the plain, no-AI
+      # `docker compose up -d` (see the same note on the ai-agent service below).
+      # The backend's own settings validate this is set when AI_ENABLED=true.
+      AI_AGENT_TOKEN: ${AI_AGENT_TOKEN:-}
+      AI_TIMEOUT_SECONDS: ${AI_TIMEOUT_SECONDS:-50}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "127.0.0.1:${FRONTEND_HOST_PORT:-5173}:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O-", "http://localhost/"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # --- slice 4 (profile "ai") ---
+  # Optional trio: `docker compose --profile ai up -d`. The plain `docker compose up -d`
+  # above never starts these, never pulls a model, and the app is fully usable with
+  # AI_ENABLED=false (see README "AI features").
+  ai-agent:
+    build:
+      context: ./ai-agent
+    profiles: ["ai"]
+    # Not published by default — reachable only on the compose network as
+    # ai-agent:8000 (backend talks to it via AI_AGENT_URL).
+    # ports:
+    #   - "127.0.0.1:${AI_AGENT_HOST_PORT:-8020}:8000"   # uncomment for debugging on 127.0.0.1:8020
+    environment:
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5:3b}
+      OLLAMA_TIMEOUT_SECONDS: ${OLLAMA_TIMEOUT_SECONDS:-45}
+      # `:-` not `:?`: Compose interpolates every service's environment block during
+      # `docker compose config`/`up`, even for services in an inactive profile — a `:?`
+      # here would break the plain, no-AI `docker compose up -d` even though ai-agent
+      # never runs in that invocation. ai-agent's own Settings validates AI_AGENT_TOKEN
+      # (>=32 chars, rejects the known .env.example placeholder) and fails the
+      # container fast at startup if it's missing or invalid — that only matters once
+      # someone actually runs --profile ai.
+      AI_AGENT_TOKEN: ${AI_AGENT_TOKEN:-}
+      APP_ENV: ${APP_ENV:-dev}
+    depends_on:
+      ollama:
+        condition: service_started
+      # Wait for the pull+warm-up one-shot so the first real request usually hits an
+      # already-loaded model. `required: false` preserves master §10's explicit rule
+      # that ai-agent must come up even if the pull fails (no internet, disk full) —
+      # compose still waits for ollama-pull to reach a terminal state, but a non-zero
+      # exit there does not block ai-agent from starting.
+      ollama-pull:
+        condition: service_completed_successfully
+        required: false
+    healthcheck:
+      test: ["CMD", "/app/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # `ollama` stores pulled models in the named volume `ollama_models`, mapped to the
+  # fixed Docker volume name `todo-app-ollama` (see `volumes:` below). On this host
+  # that volume already exists, pre-seeded with `qwen2.5:3b` — compose reuses it as-is
+  # (no `external: true`, so nothing needs pre-creating). On a fresh machine, compose
+  # creates an empty volume of that name on first `up`, and `ollama-pull` populates it.
+  ollama:
+    # Pinned, not `:latest` (iteration 4, IT3-6): `:latest` drifts silently and a
+    # `docker compose --profile ai up` after a host image update can trigger an
+    # unplanned pull or run a different Ollama than the one this stack was verified
+    # against. `OLLAMA_IMAGE` is chosen from what is already cached on the host (see
+    # `.env.example` for the procedure and README "GPU acceleration"); pin by digest
+    # when no matching version tag is cached locally, so `up` never needs the network.
+    # Sourced from the `x-ollama-image` anchor at the top of this file — do not
+    # duplicate the literal digest here, edit it there (kept in sync with ollama-pull).
+    image: *ollama-image
+    profiles: ["ai"]
+    environment:
+      # Keep a loaded model resident so the first *user* request after warm-up (see
+      # ollama-pull below) doesn't pay a cold-load penalty again. 24h is generous for a
+      # personal, always-on dev/home server; override down if RAM is tight.
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-24h}
+    volumes:
+      - ollama_models:/root/.ollama
+    # ports:
+    #   - "127.0.0.1:11435:11434"   # debug only — host 11434 belongs to a foreign project
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  # One-shot: pulls $OLLAMA_MODEL idempotently (`ollama pull` no-ops if already present),
+  # then warms it into memory (`ollama run ... --keepalive`) so the first real user
+  # request doesn't pay the cold-load cost (a cold qwen2.5:3b load measured 45-90s on
+  # this host's CPU — see devops verification notes). The warm-up is best-effort: if
+  # the pull succeeds but the warm-up call fails or times out, the script still exits 0
+  # (pull is what matters for correctness; warm-up is a UX nicety). If the pull itself
+  # fails (no internet, disk full), the script exits non-zero and ai-agent still starts
+  # (see its depends_on below) — it then reports model_present:false.
+  ollama-pull:
+    # Same `x-ollama-image` anchor as `ollama` above — the two can never drift apart
+    # because both reference the single definition at the top of this file, so the
+    # one-shot always pulls the model with the exact CLI/server version `ollama` speaks.
+    image: *ollama-image
+    profiles: ["ai"]
+    environment:
+      OLLAMA_HOST: "http://ollama:11434"
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-qwen2.5:3b}"
+      OLLAMA_KEEP_ALIVE: ${OLLAMA_KEEP_ALIVE:-24h}
+    entrypoint:
+      - "/bin/sh"
+      - "-c"
+      - |
+        set -e
+        ollama pull "$$OLLAMA_MODEL"
+        echo "warming $$OLLAMA_MODEL into memory (keep-alive $$OLLAMA_KEEP_ALIVE)..."
+        timeout 180 ollama run "$$OLLAMA_MODEL" "ok" --keepalive "$$OLLAMA_KEEP_ALIVE" >/dev/null \
+          || echo "warm-up call failed or timed out; ai-agent will still start, first real request pays the cold-load cost"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  pgdata: {}
+  # Fixed Docker volume name (`todo-app-ollama`) instead of the project-prefixed
+  # default, so it's found/reused across compose project names and hosts that already
+  # have it. See the `ollama` service comment above for the fresh-machine behaviour.
+  ollama_models:
+    name: todo-app-ollama

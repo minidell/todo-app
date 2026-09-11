@@ -1,0 +1,50 @@
+[project]
+name = "todo-backend"
+version = "0.2.0"
+description = "Todo backend (FastAPI, PostgreSQL via async SQLAlchemy + Alembic)"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "sqlalchemy[asyncio]>=2.0",
+    "asyncpg",
+    "alembic",
+    "pydantic-settings",
+    "pydantic[email]",
+    "argon2-cffi",
+    "pyjwt",
+    # Runtime from slice 4: the backend proxies the AI endpoints to the private
+    # ai-agent service (master D-AI2). It was a dev-only dependency while it
+    # was only the test client's transport.
+    "httpx",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "aiosqlite",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "postgres: test requires a live PostgreSQL (skipped unless TEST_DATABASE_URL is set)",
+]
+# A forgotten `await` is reported as "coroutine ... was never awaited", a
+# RuntimeWarning that pytest would otherwise print and pass. On this codebase
+# that warning means a security control silently did not run: dropping the
+# await on verify_dummy_password, for example, removes the timing
+# equalisation that keeps login from being an account-enumeration oracle,
+# and every assertion still holds.
+#
+# Both entries are needed. The un-awaited-coroutine warning is emitted from
+# the garbage collector, where an exception cannot propagate, so pytest
+# re-raises it wrapped as PytestUnraisableExceptionWarning — erroring on
+# RuntimeWarning alone leaves the case that motivated the setting passing.
+filterwarnings = [
+    "error::RuntimeWarning",
+    "error::pytest.PytestUnraisableExceptionWarning",
+]

@@ -1,0 +1,479 @@
+<title>Kronika iteracji 5</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F4F6F8; --surface: #FFFFFF; --surface-2: #EAEEF2;
+    --ink: #1A2230; --ink-2: #4A5568; --ink-3: #7B8794; --line: #D6DCE3;
+    --accent: #0E7C72; --accent-ink: #0B5F58; --accent-soft: #D9F0EC;
+    --warn: #B4600A; --warn-soft: #FBE9D3; --ok: #2F7A3E; --ok-soft: #DDF1E0;
+    --bad: #B42318; --bad-soft: #FDE2E0;
+    --planner: #6D4FC2; --backend: #2D5BD1; --frontend: #C2410C; --devops: #2F855A;
+    --qa: #0B7C9E; --review: #5B6B7F; --lead: #1A2230; --code-bg: #1E2530; --code-ink: #E6EBF1;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+      --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+      --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+      --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+      --bad: #F08A80; --bad-soft: #3F1B18;
+      --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+      --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #121820; --surface: #1A222D; --surface-2: #232D3A;
+    --ink: #E8EDF3; --ink-2: #B3BDCA; --ink-3: #7F8A98; --line: #2E3946;
+    --accent: #3FB8AB; --accent-ink: #7ED6CB; --accent-soft: #163B38;
+    --warn: #E5A050; --warn-soft: #3D2A12; --ok: #6CC47C; --ok-soft: #173A20;
+    --bad: #F08A80; --bad-soft: #3F1B18;
+    --planner: #A78BFA; --backend: #7C9BF0; --frontend: #F0865A; --devops: #6CC47C;
+    --qa: #58C0E0; --review: #A2B0C2; --lead: #E8EDF3; --code-bg: #0D1117; --code-ink: #DCE3EB;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: "IBM Plex Sans", "Segoe UI", Roboto, system-ui, sans-serif; font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 96px; }
+  h1, h2, h3 { font-family: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif; text-wrap: balance; margin: 0; line-height: 1.15; }
+  h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.01em; }
+  h2 { font-size: 26px; font-weight: 700; margin-top: 64px; margin-bottom: 16px; }
+  h3 { font-size: 18px; font-weight: 600; margin-top: 28px; margin-bottom: 8px; }
+  p { margin: 0 0 14px; max-width: 68ch; }
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.92em; }
+  code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre { background: var(--code-bg); color: var(--code-ink); padding: 14px 16px; border-radius: 6px; overflow-x: auto; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13.5px; line-height: 1.5; margin: 0 0 16px; }
+  pre code { background: none; padding: 0; color: inherit; font-size: inherit; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; margin-bottom: 12px; }
+  .lede { font-size: 18px; color: var(--ink-2); margin-top: 16px; max-width: 62ch; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-top: 32px; }
+  .stat { background: var(--surface); padding: 16px 18px; }
+  .stat .v { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 30px; font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .stat .v.accent { color: var(--accent); }
+  .stat .l { font-size: 13px; color: var(--ink-3); margin-top: 4px; }
+  @media (max-width: 640px) { .stats { grid-template-columns: repeat(2, 1fr); } h1 { font-size: 34px; } }
+  .chip { display: inline-block; font-family: "IBM Plex Mono", monospace; font-size: 11.5px; font-weight: 500; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.02em; white-space: nowrap; color: #fff; line-height: 1.5; }
+  .chip.planner { background: var(--planner); } .chip.backend { background: var(--backend); } .chip.frontend { background: var(--frontend); }
+  .chip.devops { background: var(--devops); } .chip.qa { background: var(--qa); } .chip.review { background: var(--review); } .chip.lead { background: var(--lead); color: var(--bg); }
+  .verdict { display: inline-block; font-size: 12px; font-weight: 600; padding: 2px 9px; border-radius: 4px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .verdict.ok { background: var(--ok-soft); color: var(--ok); } .verdict.warn { background: var(--warn-soft); color: var(--warn); } .verdict.bad { background: var(--bad-soft); color: var(--bad); }
+  .phase { margin-top: 36px; }
+  .phase-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding-bottom: 8px; border-bottom: 2px solid var(--ink); }
+  .phase-head h3 { margin: 0; }
+  .phase-head .span { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .phase-note { color: var(--ink-2); font-size: 15px; margin: 12px 0 6px; max-width: 70ch; }
+  .events { list-style: none; margin: 0; padding: 0; }
+  .events li { display: grid; grid-template-columns: 72px 92px 1fr; gap: 12px; align-items: baseline; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .events li:last-child { border-bottom: 0; }
+  .events .time { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .events .msg { font-size: 15px; }
+  .events .msg .hash { font-family: "IBM Plex Mono", monospace; font-size: 12.5px; color: var(--ink-3); margin-left: 8px; }
+  .events .msg em { color: var(--ink-2); }
+  @media (max-width: 560px) { .events li { grid-template-columns: 64px 1fr; } .events .msg { grid-column: 1 / -1; } }
+  .pause { display: grid; grid-template-columns: 72px 1fr; gap: 12px; padding: 10px 12px; margin: 10px 0; background: var(--warn-soft); border-radius: 6px; font-size: 14px; color: var(--warn); }
+  .pause .time { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .tbl-wrap { overflow-x: auto; margin: 12px 0 20px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+  td.num { font-variant-numeric: tabular-nums; font-family: "IBM Plex Mono", monospace; font-size: 13.5px; }
+  tr.total td { font-weight: 600; border-top: 2px solid var(--ink); }
+  ul.plain { padding-left: 20px; margin: 0 0 14px; max-width: 70ch; }
+  ul.plain li { margin-bottom: 6px; }
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); padding: 12px 16px; margin: 20px 0; max-width: 72ch; border-radius: 0 6px 6px 0; }
+  .callout.warn { border-left-color: var(--warn); }
+  .callout strong { font-weight: 600; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  @media (max-width: 640px) { .cols { grid-template-columns: 1fr; } }
+  footer { margin-top: 72px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 13px; }
+  footer p { margin: 0 0 4px; }
+
+  /* lane chart: categorical slots in fixed order (lead, planner, backend/ai-agent, frontend, gates, qa), lanes are labelled so colour is never the only carrier */
+  :root { --s-lead: #eda100; --s-planner: #eb6834; --s-impl: #2a78d6; --s-fe: #e87ba4; --s-gate: #4a3aa7; --s-qa: #1baf7a; --band: rgba(26,34,48,0.035); --band-alt: rgba(26,34,48,0.075); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --s-lead: #c98500; --s-planner: #d95926; --s-impl: #3987e5; --s-fe: #d55181; --s-gate: #9085e9; --s-qa: #199e70; --band: rgba(232,237,243,0.04); --band-alt: rgba(232,237,243,0.09); } }
+  :root[data-theme="dark"] { --s-lead: #c98500; --s-planner: #d95926; --s-impl: #3987e5; --s-fe: #d55181; --s-gate: #9085e9; --s-qa: #199e70; --band: rgba(232,237,243,0.04); --band-alt: rgba(232,237,243,0.09); }
+  .chart-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 12px 8px 4px; margin: 16px 0 8px; }
+  svg.lanes { display: block; width: 100%; min-width: 760px; height: auto; font-family: "IBM Plex Sans", system-ui, sans-serif; }
+  .lanes .band { fill: var(--band); } .lanes .band.alt { fill: var(--band-alt); }
+  .lanes .band-l { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; fill: var(--ink-3); }
+  .lanes .grid { stroke: var(--line); stroke-width: 1; } .lanes .lane-line { stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 4; }
+  .lanes .ax { font-family: "IBM Plex Mono", monospace; font-size: 11.5px; fill: var(--ink-3); } .lanes .ax.small { font-size: 10px; }
+  .lanes .ax-l { font-size: 11.5px; fill: var(--ink-3); } .lanes .lane-l { font-size: 13px; font-weight: 500; fill: var(--ink); }
+  .lanes .bar { stroke: var(--surface); stroke-width: 1.5; } .lanes .bar.lead { fill: var(--s-lead); } .lanes .bar.planner { fill: var(--s-planner); }
+  .lanes .bar.impl { fill: var(--s-impl); } .lanes .bar.fe { fill: var(--s-fe); } .lanes .bar.gate { fill: var(--s-gate); } .lanes .bar.qa { fill: var(--s-qa); }
+  .lanes .bar.soft { fill-opacity: 0.45; }
+  .lanes .tick { stroke: var(--surface); stroke-width: 2; } .lanes .tick.wip { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+  .lanes .merge { fill: var(--ink); stroke: var(--surface); stroke-width: 1; }
+  .lanes .endline { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 4 3; } .lanes .end-l { font-size: 11px; fill: var(--ink-2); }
+  .lanes .conc-area { fill: var(--accent); fill-opacity: 0.18; } .lanes .conc-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; }
+  .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 13px; color: var(--ink-2); margin: 6px 0 18px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { display: inline-block; width: 14px; height: 10px; border-radius: 2px; } .sw.soft { opacity: 0.45; }
+  .sw.tick { width: 2px; height: 12px; background: var(--ink); border-radius: 0; } .sw.wip { width: 9px; height: 9px; border-radius: 50%; border: 1.5px solid var(--ink); background: var(--surface); }
+  .sw.merge { width: 9px; height: 9px; background: var(--ink); transform: rotate(45deg); border-radius: 1px; }
+  .sw.conc { background: var(--accent); opacity: 0.35; }
+  .kv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin: 18px 0; }
+  .kv div { background: var(--surface); padding: 12px 14px; } .kv .v { font-family: "Bricolage Grotesque", system-ui, sans-serif; font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; } .kv .l { font-size: 13px; color: var(--ink-3); margin-top: 2px; }
+  @media (max-width: 640px) { .kv { grid-template-columns: 1fr; } }
+</style>
+
+<div class="page">
+  <div class="eyebrow">Todo App · iteracja 5 · 10 września 2026</div>
+  <h1>Kronika iteracji 5</h1>
+  <p class="lede">Edycja zadania instrukcją w języku naturalnym: trzecia pozycja w menu AI każdego zadania, pole na dowolny tekst, a w odpowiedzi zestaw zmian do potwierdzenia. Trzy slice'y w trzech worktree naraz, dwie rundy review, re-review równolegle z QA na żywym modelu. Ta kronika pokazuje dokładnie, kto pracował kiedy i kto na kogo czekał.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v accent">1 h 33 min</div><div class="l">od polecenia do scalenia i przebudowy podglądu; planner szacował 2 h 15 min – 3 h</div></div>
+    <div class="stat"><div class="v">43</div><div class="l">commity: 37 roboczych i 6 scaleń; 29 plików, +7 329 linii</div></div>
+    <div class="stat"><div class="v">2 063</div><div class="l">testów na main: 1 009 backend, 740 ai-agent, 296 Vitest, 18 Playwright</div></div>
+    <div class="stat"><div class="v">3 / 3</div><div class="l">wynik toru na żywym modelu qwen2.5:3b, z 1/3 na starcie</div></div>
+  </div>
+
+  <h2>Zakres</h2>
+  <p>Zlecenie użytkownika: do każdego zadania na liście, w jego opcjach AI, dodać możliwość wpisania dowolnego tekstu jako instrukcji modyfikacji tego zadania, na przykład zmiana nazwy, dodanie lub usunięcie podzadania, dodanie etykiet i inne sensowne zmiany. Orkiestrator doprecyzował ramy: wejście przez istniejące menu AI na karcie, odpowiedź jako szkic zmian do potwierdzenia (tak jak pozostałe funkcje AI), zakres ograniczony do pól, które zadanie już ma, żadnego przenoszenia między listami, usuwania zadania ani tworzenia innych zadań.</p>
+
+  <h2>Jak pracował zespół</h2>
+  <p>Planner zamroził kontrakt na obu stykach: <code>POST /api/ai/edit-todo</code> między przeglądarką a backendem oraz <code>POST /ai/edit-todo</code> między backendem a ai-agentem. Trzy decyzje projektowe ustawiły całą resztę: model nigdy nie widzi identyfikatorów podzadań (operuje na pozycjach 1..N, backend mapuje pozycję na id), nie powstaje żaden nowy endpoint zapisu (frontend stosuje potwierdzone zmiany przez istniejące PATCH i endpointy podzadań, więc zdarzenia SSE i liczniki zachowują się jak dotąd), a operacje spoza zakresu są niereprezentowalne w schemacie odpowiedzi, nie tylko walidowane. Dzięki rozłącznym drzewom plików trzy agenty implementujące wystartowały w tej samej minucie; frontend budował przeciw zamockowanym odpowiedziom, backend przeciw istniejącemu fałszywemu transportowi.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Model</th><th>Commity</th><th>Praca</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip lead">lead</span></td><td>Fable</td><td class="num">9 + 6 scaleń</td><td>dyspozycja, dashboard, delta specu głównego, dwie rundy bramek, integracja, sprzątanie worktree, podgląd</td></tr>
+        <tr><td><span class="chip planner">planner</span></td><td>Opus</td><td class="num">1</td><td>spec na 881 linii, zamrożony kontrakt na obu stykach, osiem zapisanych decyzji, ryzyka R1–R7, brak pytań kontraktowych</td></tr>
+        <tr><td><span class="chip backend">backend (ai-agent)</span></td><td>Opus</td><td class="num">11</td><td>endpoint, prompt z trzema przykładami few-shot, schemat JSON dla constrained decoding, sanitizery pozycji, tagów i flag, 71 testów endpointu, tor na żywym modelu</td></tr>
+        <tr><td><span class="chip backend">backend</span></td><td>Opus</td><td class="num">7</td><td>proxy pod wspólnymi strażnikami AI, pozycyjna migawka zadania, rozwiązanie propozycji w zestaw zmian: pozycja→id, tłumienie no-op, limit tagów, kolejność operacji; ~50 testów na obu torach</td></tr>
+        <tr><td><span class="chip frontend">frontend</span></td><td>Opus</td><td class="num">8</td><td>klient <code>editTodo</code> z parserem „nie ufaj niczemu”, <code>AiEditPanel</code> (instrukcja → podgląd z checkboxami → stan końcowy), trzecia pozycja menu, pętla apply: jeden PATCH, potem operacje na podzadaniach; 34 nowe testy</td></tr>
+        <tr><td><span class="chip review">reviewer</span> / <span class="chip review">security</span></td><td>Opus</td><td class="num">—</td><td>reviewer dwie rundy (zmiany, potem zatwierdzenie), security jedna; oba styki prześledzone z prawdziwymi typami, wrogie wejścia sprawdzone empirycznie</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td>Sonnet</td><td class="num">2</td><td>nowy test E2E <code>ai-edit.spec.ts</code> na żywym modelu, pełne suity na obu torach, sondy API przez curl, ścieżka klawiaturowa, 390 px</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+  <h2>Praca równoległa, minuta po minucie</h2>
+  <p>Każdy tor to jeden agent. Pełny słupek to praca nad kodem, jaśniejszy to długi krok (tor na żywym modelu, tor PostgreSQL), kreski to commity na gałęzi worktree, kółko to commit <code>wip</code> przed długim krokiem, romby na torze lidera to scalenia. Pasek na dole liczy agentów pracujących w tej samej chwili, bez lidera. Najedź na słupek lub kreskę, żeby zobaczyć szczegóły.</p>
+  <div class="chart-wrap">
+<svg class="lanes" viewBox="0 0 980 448" role="img" aria-labelledby="lanes-title lanes-desc" xmlns="http://www.w3.org/2000/svg">
+<title id="lanes-title">Tory agentów w iteracji 5</title><desc id="lanes-desc">Osiem torów, jeden na agenta, z oknami aktywności między 12:21 a 13:59 CEST, znacznikami commitów i liczbą równocześnie pracujących agentów.</desc>
+<rect class="band" x="127.0" y="24" width="93.7" height="294"/>
+<text class="band-l" x="131.0" y="37">Planowanie</text>
+<rect class="band alt" x="220.7" y="24" width="279.2" height="294"/>
+<text class="band-l" x="224.7" y="24">Implementacja · 3 worktree</text>
+<rect class="band" x="499.9" y="24" width="97.0" height="294"/>
+<text class="band-l" x="503.9" y="37">Bramki 1</text>
+<rect class="band alt" x="596.9" y="24" width="66.9" height="294"/>
+<text class="band-l" x="600.9" y="24">Poprawki</text>
+<rect class="band" x="663.8" y="24" width="209.8" height="294"/>
+<text class="band-l" x="667.8" y="37">Re-review ‖ QA</text>
+<rect class="band alt" x="873.6" y="24" width="64.8" height="294"/>
+<text class="band-l" x="877.6" y="24">Zamknięcie</text>
+<line class="grid" x1="112.0" y1="46" x2="112.0" y2="408"/>
+<text class="ax" x="112.0" y="426" text-anchor="middle">12:20</text>
+<line class="grid" x1="195.6" y1="46" x2="195.6" y2="408"/>
+<text class="ax" x="195.6" y="426" text-anchor="middle">12:30</text>
+<line class="grid" x1="279.2" y1="46" x2="279.2" y2="408"/>
+<text class="ax" x="279.2" y="426" text-anchor="middle">12:40</text>
+<line class="grid" x1="362.8" y1="46" x2="362.8" y2="408"/>
+<text class="ax" x="362.8" y="426" text-anchor="middle">12:50</text>
+<line class="grid" x1="446.4" y1="46" x2="446.4" y2="408"/>
+<text class="ax" x="446.4" y="426" text-anchor="middle">12:00</text>
+<line class="grid" x1="530.0" y1="46" x2="530.0" y2="408"/>
+<text class="ax" x="530.0" y="426" text-anchor="middle">12:10</text>
+<line class="grid" x1="613.6" y1="46" x2="613.6" y2="408"/>
+<text class="ax" x="613.6" y="426" text-anchor="middle">13:20</text>
+<line class="grid" x1="697.2" y1="46" x2="697.2" y2="408"/>
+<text class="ax" x="697.2" y="426" text-anchor="middle">13:30</text>
+<line class="grid" x1="780.8" y1="46" x2="780.8" y2="408"/>
+<text class="ax" x="780.8" y="426" text-anchor="middle">13:40</text>
+<line class="grid" x1="864.4" y1="46" x2="864.4" y2="408"/>
+<text class="ax" x="864.4" y="426" text-anchor="middle">13:50</text>
+<line class="grid" x1="948.0" y1="46" x2="948.0" y2="408"/>
+<text class="ax" x="948.0" y="426" text-anchor="middle">13:00</text>
+<text class="ax-l" x="112" y="442">czas lokalny CEST (UTC = −2 h)</text>
+<line class="lane-line" x1="112" y1="79" x2="948" y2="79"/>
+<text class="lane-l" x="102" y="67.0" text-anchor="end">lider</text>
+<rect class="bar lead" x="127.0" y="54" width="10.1" height="18" rx="3"><title>lider · 10:21–10:23 UTC · start pomiaru, dyspozycja plannera</title></rect>
+<rect class="bar lead" x="220.7" y="54" width="9.7" height="18" rx="3"><title>lider · 10:33–10:34 UTC · dyspozycja A/B/C w trzech worktree</title></rect>
+<rect class="bar lead" x="496.6" y="54" width="16.7" height="18" rx="3"><title>lider · 11:06–11:08 UTC · scalenie A/B/C do integrate, dyspozycja reviewer + security</title></rect>
+<rect class="bar lead" x="596.9" y="54" width="20.9" height="18" rx="3"><title>lider · 11:18–11:20 UTC · delta specu głównego, routing ustaleń do frontendu i backendu</title></rect>
+<rect class="bar lead" x="638.7" y="54" width="33.4" height="18" rx="3"><title>lider · 11:23–11:27 UTC · scalenie poprawek, dyspozycja re-review + QA</title></rect>
+<rect class="bar lead" x="872.8" y="54" width="65.6" height="18" rx="3"><title>lider · 11:51–11:58 UTC · scalenie na main, sprzątanie worktree, przebudowa podglądu, dashboard, kronika</title></rect>
+<line class="lane-line" x1="112" y1="113" x2="948" y2="113"/>
+<text class="lane-l" x="102" y="101.0" text-anchor="end">planner</text>
+<rect class="bar planner" x="130.1" y="88" width="86.4" height="18" rx="3"><title>planner · 10:22–10:32 UTC · spec 881 linii, kontrakt zamrożony na obu stykach · 10 min</title></rect>
+<line class="tick" x1="220.1" y1="89" x2="220.1" y2="105"><title>10:32 UTC · commit: spec commit</title></line>
+<line class="lane-line" x1="112" y1="147" x2="948" y2="147"/>
+<text class="lane-l" x="102" y="135.0" text-anchor="end">ai-agent (A)</text>
+<rect class="bar impl" x="224.9" y="122" width="105.9" height="18" rx="3"><title>ai-agent (A) · 10:33–10:46 UTC · endpoint, prompt, schemat, sanitizery, 71 testów · 13 min</title></rect>
+<rect class="bar impl soft" x="330.8" y="122" width="168.5" height="18" rx="3"><title>ai-agent (A) · 10:46–11:06 UTC · tor na żywym modelu: 1/3 → 2/3 → 3/3 · 20 min</title></rect>
+<line class="tick" x1="272.0" y1="123" x2="272.0" y2="139"><title>10:39 UTC · commit: wire models</title></line>
+<line class="tick" x1="290.8" y1="123" x2="290.8" y2="139"><title>10:41 UTC · commit: endpoint tests</title></line>
+<line class="tick" x1="310.5" y1="123" x2="310.5" y2="139"><title>10:43 UTC · commit: sanitizer tests</title></line>
+<line class="tick" x1="318.8" y1="123" x2="318.8" y2="139"><title>10:44 UTC · commit: live lane</title></line>
+<line class="tick" x1="330.8" y1="123" x2="330.8" y2="139"><title>10:46 UTC · commit: READMEs</title></line>
+<circle class="tick wip" cx="395.5" cy="131.0" r="4.5"><title>10:53 UTC · wip: live-lane fixes</title></circle>
+<line class="tick" x1="464.2" y1="123" x2="464.2" y2="139"><title>11:02 UTC · commit: few-shot via real renderer</title></line>
+<line class="tick" x1="485.0" y1="123" x2="485.0" y2="139"><title>11:04 UTC · commit: live-lane result</title></line>
+<line class="tick" x1="491.8" y1="123" x2="491.8" y2="139"><title>11:05 UTC · commit: subtask cap</title></line>
+<line class="lane-line" x1="112" y1="181" x2="948" y2="181"/>
+<text class="lane-l" x="102" y="169.0" text-anchor="end">backend (B)</text>
+<rect class="bar impl" x="224.9" y="156" width="96.1" height="18" rx="3"><title>backend (B) · 10:33–10:45 UTC · proxy, migawka, rozwiązanie propozycji, testy · 11 min</title></rect>
+<rect class="bar impl soft" x="321.0" y="156" width="92.0" height="18" rx="3"><title>backend (B) · 10:45–10:56 UTC · tor PostgreSQL 1 026 testów · 10 min</title></rect>
+<rect class="bar impl" x="601.1" y="156" width="59.9" height="18" rx="3"><title>backend (B) · 11:18–11:25 UTC · poprawki: action, reopen, znaki kontrolne, horyzont daty · 7 min</title></rect>
+<line class="tick" x1="260.4" y1="157" x2="260.4" y2="173"><title>10:37 UTC · commit: wire models + proxy</title></line>
+<line class="tick" x1="297.7" y1="157" x2="297.7" y2="173"><title>10:42 UTC · commit: resolution tests</title></line>
+<line class="tick" x1="319.5" y1="157" x2="319.5" y2="173"><title>10:44 UTC · commit: non-writing route</title></line>
+<line class="tick" x1="605.7" y1="157" x2="605.7" y2="173"><title>11:19 UTC · commit: unhashable action</title></line>
+<line class="tick" x1="608.0" y1="157" x2="608.0" y2="173"><title>11:19 UTC · commit: reopen/complete</title></line>
+<line class="tick" x1="613.6" y1="157" x2="613.6" y2="173"><title>11:20 UTC · commit: control chars</title></line>
+<line class="tick" x1="622.2" y1="157" x2="622.2" y2="173"><title>11:21 UTC · commit: due-date horizon</title></line>
+<line class="lane-line" x1="112" y1="215" x2="948" y2="215"/>
+<text class="lane-l" x="102" y="203.0" text-anchor="end">frontend (C)</text>
+<rect class="bar fe" x="224.9" y="190" width="123.3" height="18" rx="3"><title>frontend (C) · 10:33–10:48 UTC · klient, panel, podgląd, pętla apply, 27 testów · 15 min</title></rect>
+<rect class="bar fe" x="601.1" y="190" width="37.6" height="18" rx="3"><title>frontend (C) · 11:18–11:23 UTC · poprawki: limit tagów, licznik, strażnik id, testy · 4,5 min</title></rect>
+<line class="tick" x1="269.3" y1="191" x2="269.3" y2="207"><title>10:38 UTC · commit: API client + parser</title></line>
+<line class="tick" x1="303.6" y1="191" x2="303.6" y2="207"><title>10:42 UTC · commit: AiEditPanel + apply loop</title></line>
+<line class="tick" x1="318.8" y1="191" x2="318.8" y2="207"><title>10:44 UTC · commit: panel tests</title></line>
+<line class="tick" x1="334.0" y1="191" x2="334.0" y2="207"><title>10:46 UTC · commit: App tests</title></line>
+<line class="tick" x1="344.1" y1="191" x2="344.1" y2="207"><title>10:47 UTC · commit: 390px labels</title></line>
+<line class="tick" x1="612.2" y1="191" x2="612.2" y2="207"><title>11:19 UTC · commit: tag cap</title></line>
+<line class="tick" x1="623.6" y1="191" x2="623.6" y2="207"><title>11:21 UTC · commit: counting, guard, add-404</title></line>
+<line class="tick" x1="629.2" y1="191" x2="629.2" y2="207"><title>11:21 UTC · commit: labels</title></line>
+<line class="lane-line" x1="112" y1="249" x2="948" y2="249"/>
+<text class="lane-l" x="102" y="237.0" text-anchor="end">security</text>
+<rect class="bar gate" x="504.9" y="224" width="56.4" height="18" rx="3"><title>security · 11:07–11:13 UTC · audyt: authz, wstrzyknięcia, limity, sekrety → APPROVE · 7 min</title></rect>
+<line class="lane-line" x1="112" y1="283" x2="948" y2="283"/>
+<text class="lane-l" x="102" y="271.0" text-anchor="end">reviewer</text>
+<rect class="bar gate" x="504.9" y="258" width="89.2" height="18" rx="3"><title>reviewer · 11:07–11:17 UTC · runda 1: oba styki prześledzone → CHANGES REQUESTED · 11 min</title></rect>
+<rect class="bar gate" x="663.8" y="258" width="36.2" height="18" rx="3"><title>reviewer · 11:26–11:30 UTC · runda 2: siedem ustaleń zweryfikowane → APPROVE · 4 min</title></rect>
+<line class="lane-line" x1="112" y1="317" x2="948" y2="317"/>
+<text class="lane-l" x="102" y="305.0" text-anchor="end">qa</text>
+<rect class="bar qa" x="663.8" y="292" width="204.8" height="18" rx="3"><title>qa · 11:26–11:50 UTC · ai-edit.spec.ts, pełne suity, E2E na żywym modelu ×2, sondy API → PASS · 24,5 min</title></rect>
+<circle class="tick wip" cx="688.4" cy="301.0" r="4.5"><title>11:28 UTC · wip: ai-edit.spec.ts</title></circle>
+<line class="tick" x1="825.4" y1="293" x2="825.4" y2="309"><title>11:45 UTC · commit: locator fix</title></line>
+<path class="merge" d="M499.9 57.0 L505.9 63.0 L499.9 69.0 L493.9 63.0 Z"><title>11:06 UTC · scalenie: 3 scalenia do integrate</title></path>
+<path class="merge" d="M639.2 57.0 L645.2 63.0 L639.2 69.0 L633.2 63.0 Z"><title>11:23 UTC · scalenie: poprawki frontendu</title></path>
+<path class="merge" d="M657.6 57.0 L663.6 63.0 L657.6 69.0 L651.6 63.0 Z"><title>11:25 UTC · scalenie: poprawki backendu</title></path>
+<path class="merge" d="M873.6 57.0 L879.6 63.0 L873.6 69.0 L867.6 63.0 Z"><title>11:51 UTC · scalenie: main c352752</title></path>
+<path class="merge" d="M920.1 57.0 L926.1 63.0 L920.1 69.0 L914.1 63.0 Z"><title>11:56 UTC · scalenie: dashboard</title></path>
+<path class="merge" d="M938.4 57.0 L944.4 63.0 L938.4 69.0 L932.4 63.0 Z"><title>11:58 UTC · scalenie: kronika</title></path>
+<line class="endline" x1="908.3" y1="24" x2="908.3" y2="408"/>
+<text class="end-l" x="904.3" y="336" text-anchor="end">koniec pomiaru 13:55:15</text>
+<text class="lane-l" x="102" y="372.0" text-anchor="end">aktywni agenci</text>
+<line class="grid" x1="112" y1="376.0" x2="948" y2="376.0"/><text class="ax small" x="108" y="379.0" text-anchor="end">1</text>
+<line class="grid" x1="112" y1="360.0" x2="948" y2="360.0"/><text class="ax small" x="108" y="363.0" text-anchor="end">2</text>
+<line class="grid" x1="112" y1="344.0" x2="948" y2="344.0"/><text class="ax small" x="108" y="347.0" text-anchor="end">3</text>
+<path class="conc-area" d="M112.0,392.0 L112.0,392.0 L130.1,392.0 L130.1,376.0 L216.5,376.0 L216.5,392.0 L224.9,392.0 L224.9,344.0 L348.2,344.0 L348.2,360.0 L413.0,360.0 L413.0,376.0 L499.3,376.0 L499.3,392.0 L504.9,392.0 L504.9,360.0 L561.3,360.0 L561.3,376.0 L594.1,376.0 L594.1,392.0 L601.1,392.0 L601.1,360.0 L638.7,360.0 L638.7,376.0 L661.0,376.0 L661.0,392.0 L663.8,392.0 L663.8,360.0 L700.0,360.0 L700.0,376.0 L868.6,376.0 L868.6,392.0 L948.0,392.0 L948.0,392.0 Z"/>
+<path class="conc-line" d="M112.0,392.0 L130.1,392.0 L130.1,376.0 L216.5,376.0 L216.5,392.0 L224.9,392.0 L224.9,344.0 L348.2,344.0 L348.2,360.0 L413.0,360.0 L413.0,376.0 L499.3,376.0 L499.3,392.0 L504.9,392.0 L504.9,360.0 L561.3,360.0 L561.3,376.0 L594.1,376.0 L594.1,392.0 L601.1,392.0 L601.1,360.0 L638.7,360.0 L638.7,376.0 L661.0,376.0 L661.0,392.0 L663.8,392.0 L663.8,360.0 L700.0,360.0 L700.0,376.0 L868.6,376.0 L868.6,392.0 L948.0,392.0"/>
+</svg>
+  </div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--s-lead)"></i>lider</span>
+    <span><i class="sw" style="background:var(--s-planner)"></i>planner</span>
+    <span><i class="sw" style="background:var(--s-impl)"></i>backend i ai-agent</span>
+    <span><i class="sw" style="background:var(--s-fe)"></i>frontend</span>
+    <span><i class="sw" style="background:var(--s-gate)"></i>reviewer i security</span>
+    <span><i class="sw" style="background:var(--s-qa)"></i>qa</span>
+    <span><i class="sw soft" style="background:var(--s-impl)"></i>długi krok</span>
+    <span><i class="sw tick"></i>commit</span>
+    <span><i class="sw wip"></i>commit wip</span>
+    <span><i class="sw merge"></i>scalenie</span>
+    <span><i class="sw conc"></i>aktywni agenci</span>
+  </div>
+
+  <div class="kv">
+    <div><div class="v">138 min</div><div class="l">agent-minut pracy subagentów w 93,5 min zegara: 1,5 agenta średnio, szczyt 3</div></div>
+    <div><div class="v">~2 h 35 min</div><div class="l">tyle trwałaby ta sama praca wykonana po kolei; równoległość oszczędziła około godziny</div></div>
+    <div><div class="v">4 fale</div><div class="l">planner → A ‖ B ‖ C → reviewer ‖ security → frontend ‖ backend (poprawki) → reviewer ‖ qa</div></div>
+  </div>
+
+  <h3>Kto na kogo czekał</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Agent</th><th>Okno (CEST)</th><th>Aktywnie</th><th>Commity</th><th>Czekał na</th><th>Ktoś czekał na niego</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip planner">planner</span></td><td class="num">12:22 – 12:32</td><td class="num">10 min</td><td class="num">1</td><td>—</td><td>wszyscy trzej implementerzy (spec był warunkiem startu)</td></tr>
+        <tr><td><span class="chip backend">backend (ai-agent, A)</span></td><td class="num">12:33 – 13:06</td><td class="num">33 min</td><td class="num">11</td><td>—</td><td>lider i obie bramki: 18 min po froncie, 10 min po backendzie; ścieżka krytyczna implementacji</td></tr>
+        <tr><td><span class="chip backend">backend (B)</span></td><td class="num">12:33 – 12:56 · 13:18 – 13:26</td><td class="num">23 + 7 min</td><td class="num">3 + 4</td><td>ustalenia reviewera (runda 1)</td><td>scalenie poprawek czekało 2,5 min na jego tor testów po froncie</td></tr>
+        <tr><td><span class="chip frontend">frontend (C)</span></td><td class="num">12:33 – 12:48 · 13:18 – 13:23</td><td class="num">15 + 4,5 min</td><td class="num">5 + 3</td><td>ustalenia reviewera (runda 1)</td><td>—; jego wynik leżał 18 min do końca slice'u A</td></tr>
+        <tr><td><span class="chip review">security</span></td><td class="num">13:07 – 13:14</td><td class="num">7 min</td><td class="num">—</td><td>scalenie A/B/C</td><td>—; zatwierdził 4 min przed reviewerem</td></tr>
+        <tr><td><span class="chip review">reviewer</span></td><td class="num">13:07 – 13:18 · 13:26 – 13:30</td><td class="num">11 + 4 min</td><td class="num">—</td><td>scalenie A/B/C, potem scalenie poprawek</td><td>oba agenty poprawek (runda 1); scalenie na main (runda 2)</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td class="num">13:26 – 13:50</td><td class="num">24,5 min</td><td class="num">2</td><td>scalenie poprawek</td><td>scalenie na main; ostatnie 20 min pracował sam</td></tr>
+        <tr><td><span class="chip lead">lider</span></td><td class="num">12:21 – 13:59</td><td class="num">~15 min</td><td class="num">9 + 6 scaleń</td><td>każdy raport</td><td>każda dyspozycja</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Ścieżka krytyczna</h3>
+  <p>Planner (10 min) → ai-agent (33 min) → scalenie i reviewer runda 1 (12 min) → poprawki backendu (7 min) → scalenie → QA (24,5 min) → scalenie na main i podgląd (4 min). Razem około 91 z 93,5 minut, więc lider prawie nie dodał czasu własnego: między raportami dyspozycje i scalenia trwały łącznie kwadrans i zawsze nakładały się na czyjąś pracę. Dwie rzeczy wydłużyły ścieżkę bardziej niż inne: tor na żywym modelu w slice'u A (20 z 33 minut, trzy przebiegi, żeby dojść z 1/3 do 3/3) i pełny tor PostgreSQL w QA (10 minut na 1 038 testów, uruchomiony razem z E2E).</p>
+
+  <h3>Trzy worktree, zero konfliktów</h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Slice</th><th>Gałąź</th><th>Własność plików</th><th>Commity</th><th>Testy przy raporcie</th><th>Scalone</th></tr></thead>
+      <tbody>
+        <tr><td>A · ai-agent</td><td class="num">worktree-agent-a3872…</td><td><code>ai-agent/**</code>, jeden punkt w <code>README.md</code></td><td class="num">11 (w tym 1 wip)</td><td class="num">740 passed, live 3/3</td><td class="num">13:06 · 178681b</td></tr>
+        <tr><td>B · backend</td><td class="num">worktree-agent-adfe9…</td><td><code>backend/**</code></td><td class="num">3 + 4 poprawek</td><td class="num">997 SQLite, 1 026 PostgreSQL</td><td class="num">13:06 · edecc9d, 13:25 · cde10f2</td></tr>
+        <tr><td>C · frontend</td><td class="num">worktree-agent-a69f9…</td><td><code>frontend/**</code> bez <code>e2e/</code></td><td class="num">5 + 3 poprawek</td><td class="num">289, po poprawkach 296</td><td class="num">13:06 · b4dc3f8, 13:23 · 1b0f3ab</td></tr>
+        <tr><td>D · qa</td><td class="num">integrate/iteration-5 (drzewo główne)</td><td><code>frontend/e2e/ai-edit.spec.ts</code></td><td class="num">2 (w tym 1 wip)</td><td class="num">wszystko zielone, E2E AI 5 passed ×2</td><td class="num">13:51 · c352752</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>Rozłączność drzew plików była decyzją plannera, nie przypadkiem: <code>README.md</code> normalnie należy do devopsa, na tę iterację został przekazany slice'owi A, bo tylko on go dotykał. Dzięki temu sześć scaleń przeszło bez jednego konfliktu, a poprawki po review mogły wrócić do tych samych worktree i tych samych agentów, z zachowanym kontekstem rozmowy. QA pracowało w drzewie głównym, bo partycja główna była zapełniona w 95% i frontendowy worktree już musiał podlinkować <code>node_modules</code> z drzewa głównego zamiast instalować własne.</p>
+
+  <h3>Jak przepływały informacje</h3>
+  <ul class="plain">
+    <li><strong>Żadnych rozmów między agentami.</strong> Każdy raport wracał do lidera, lider aktualizował dashboard i decydował. Slice A zgłosił „model powtarza niezmienione pola, liczę na tłumienie no-op w backendzie”; ta uwaga trafiła do briefu reviewera jako punkt do sprawdzenia na styku A↔B, i reviewer potwierdził, że backend tłumi wszystkie sześć pól.</li>
+    <li><strong>Frontend budował przeciw zamrożonemu kontraktowi z zamockowanymi odpowiedziami</strong>, backend przeciw fałszywemu transportowi agenta, ai-agent przeciw prawdziwej Ollamie. Pierwsze prawdziwe spotkanie trzech kawałków nastąpiło na gałęzi integracyjnej o 13:06, a reviewer prześledził oba styki z prawdziwymi typami: zbudował odpowiedź agenta, zserializował ją i przepuścił przez parser backendu na prawdziwych obiektach zadania. Kontrakt zgadzał się klucz po kluczu.</li>
+    <li><strong>Ustalenia z rundy 1 poszły do dwóch agentów naraz</strong>, każdy do swojego worktree, z listą ponumerowaną jak u reviewera. Frontend odpowiedział w 4,5 minuty, backend w 7; obaj napisali, z czym się zgadzają i gdzie wybrali inaczej (frontend zostawił widoczny wiersz z notką zamiast go ukrywać, backend zgłosił tę samą lukę w starszej ścieżce <code>parse-todo</code> i nie naprawiał jej bez zgody).</li>
+    <li><strong>Re-review i QA równolegle.</strong> Po poprawkach punktowych i pokrytych testami lider nie czekał na drugi werdykt reviewera, żeby uruchomić QA; scalenie na main wymagało obu. Reviewer zatwierdził po 4 minutach, QA potrzebowało 24,5; gdyby szły po kolei, iteracja trwałaby o kwadrans dłużej.</li>
+    <li><strong>Dashboard jako pamięć.</strong> Osiem commitów <code>dashboard:</code> na osi czasu to punkty, w których świeża sesja mogłaby odtworzyć stan: kto pracuje, na jakiej gałęzi, jaki ostatni commit, jaki następny krok.</li>
+  </ul>
+
+  <h2>Oś czasu</h2>
+  <p>Czasy lokalne (CEST). Pominięto commity samego dashboardu.</p>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Planowanie</h3><span class="span">12:21 – 12:32</span></div>
+    <ul class="events">
+      <li><span class="time">12:21</span><span class="chip lead">lead</span><span class="msg">Start pomiaru, dyspozycja plannera z doprecyzowanymi ramami produktu</span></li>
+      <li><span class="time">12:32</span><span class="chip planner">planner</span><span class="msg">iteration 5 spec (AI edit-by-instruction)<span class="hash">c61f69f</span></span></li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Implementacja, trzy worktree naraz</h3><span class="span">12:33 – 13:05</span></div>
+    <p class="phase-note">Frontend i backend skończyły w kwadrans z zielonymi suitami. Agent ai-agenta zdążył napisać endpoint i testy w podobnym czasie, po czym spędził dwadzieścia minut na torze z żywym modelem, który zaczął od 1/3.</p>
+    <ul class="events">
+      <li><span class="time">12:37</span><span class="chip backend">backend</span><span class="msg">add /api/ai/edit-todo wire models and proxy handler<span class="hash">036cb71</span></span></li>
+      <li><span class="time">12:38</span><span class="chip frontend">frontend</span><span class="msg">editTodo API client + change-set parser<span class="hash">36f6744</span></span></li>
+      <li><span class="time">12:39</span><span class="chip backend">backend (ai-agent)</span><span class="msg">edit-todo prompt, JSON schema and handler<span class="hash">6946bf0</span></span></li>
+      <li><span class="time">12:42</span><span class="chip frontend">frontend</span><span class="msg">AiEditPanel, the third AI menu item and the apply loop<span class="hash">c7bc300</span></span></li>
+      <li><span class="time">12:42</span><span class="chip backend">backend</span><span class="msg">cover /api/ai/edit-todo resolution on both lanes<span class="hash">a48c0ee</span></span></li>
+      <li><span class="time">12:44</span><span class="chip backend">backend (ai-agent)</span><span class="msg">live lane for edit by instruction<span class="hash">11ccf2c</span></span></li>
+      <li><span class="time">12:47</span><span class="chip frontend">frontend</span><span class="msg">wrap long diff labels instead of scrolling at 390px <em>· raport: Vitest 289</em><span class="hash">61b47d0</span></span></li>
+      <li><span class="time">12:53</span><span class="chip backend">backend (ai-agent)</span><span class="msg">wip fix what the live lane found (restated fields, re-added subtasks) <em>· commit wip przed długim krokiem</em><span class="hash">b76b579</span></span></li>
+      <li><span class="time">12:56</span><span class="chip backend">backend</span><span class="msg"><em>raport: SQLite 997, PostgreSQL 1 026, brak zmian kontraktu</em></span></li>
+      <li><span class="time">13:02</span><span class="chip backend">backend (ai-agent)</span><span class="msg">render the few-shot todo with the real context renderer <em>· tor 3/3</em><span class="hash">05dd039</span></span></li>
+      <li><span class="time">13:06</span><span class="chip lead">lead</span><span class="msg">Scalenie trzech gałęzi do <code>integrate/iteration-5</code> bez konfliktów, dyspozycja obu recenzentów<span class="hash">b4dc3f8</span></span></li>
+    </ul>
+    <div class="callout"><strong>Reguły promptu pisane pod tworzenie zadań psuły edycję.</strong> Spec kazał użyć istniejących reguł priorytetu i tagów bez zmian. Reguła priorytetu kończy się „otherwise use medium”, reguła tagów prosi o słowa kluczowe tematu. Przy prostym „zmień nazwę na X” model 3B powtarzał więc <code>priority: medium</code> i wymyślał tagi <code>home</code>, <code>work</code>. Dwie zmiany dały 3/3: każda reguła dostała warunek „tylko jeśli instrukcja dotyczy tego pola”, a przykładowe zadanie w few-shot jest renderowane tym samym kodem co prawdziwe żądanie (jako zwarty obiekt dawało 2/3, bo model wymyślał zmiany nazw podzadań).</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Bramki, runda pierwsza i poprawki</h3><span class="span">13:08 – 13:25</span></div>
+    <ul class="events">
+      <li><span class="time">13:14</span><span class="chip review">security</span><span class="msg">Zatwierdzone: autoryzacja i własność, wstrzyknięcia promptu, limity, sekrety i zależności czyste; jedna uwaga niska, trzy informacyjne</span></li>
+      <li><span class="time">13:19</span><span class="chip review">reviewer</span><span class="msg">Zmiany wymagane: oba styki poprawne klucz po kluczu, ale dwa blokery na froncie i pięć drobiazgów</span></li>
+      <li><span class="time">13:18</span><span class="chip lead">lead</span><span class="msg">master-spec delta for POST /api/ai/edit-todo<span class="hash">fe056fb</span></span></li>
+      <li><span class="time">13:19</span><span class="chip backend">backend</span><span class="msg">never membership-test an unvalidated action<span class="hash">111d29f</span></span></li>
+      <li><span class="time">13:19</span><span class="chip frontend">frontend</span><span class="msg">never count a tag add that does not fit the 10-tag cap<span class="hash">b6cf094</span></span></li>
+      <li><span class="time">13:20</span><span class="chip backend">backend</span><span class="msg">strip control characters from an edit instruction<span class="hash">62f85c8</span></span></li>
+      <li><span class="time">13:21</span><span class="chip backend">backend</span><span class="msg">bound a proposed due date to the same +/-5-year horizon as ai-agent<span class="hash">7570f96</span></span></li>
+      <li><span class="time">13:21</span><span class="chip frontend">frontend</span><span class="msg">honest apply counting, parent-id guard, add-404 stops<span class="hash">3378c5a</span></span></li>
+      <li><span class="time">13:25</span><span class="chip lead">lead</span><span class="msg">Obie rundy poprawek scalone, re-review i QA uruchomione równolegle<span class="hash">cde10f2</span></span></li>
+    </ul>
+    <div class="callout warn"><strong>Cichy sukces, którego podgląd miał nie dopuścić.</strong> Zadanie z dziesięcioma tagami, model proponuje usunąć „work” i dodać „health”. Użytkownik odznacza usunięcie, zostawia dodanie: lista docelowa ma jedenaście nazw, przycięcie do dziesięciu przywraca dokładnie stary zestaw, PATCH jest bajt w bajt identyczny z bieżącym stanem, przycisk mówi „Apply 1 changes”, panel zamyka się jako sukces, a „health” nigdy nie powstaje. Naprawa: miejsce na nowe tagi liczone po zaznaczonych usunięciach, dodanie ponad limit znika z licznika i z PATCH, a zaznaczony wiersz zostaje na ekranie z notką „A todo can have at most 10 tags, so “health” will not be added. Keep a tag removal checked to make room.”</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-head"><h3>Re-review, QA i zamknięcie</h3><span class="span">13:25 – 13:55</span></div>
+    <p class="phase-note">QA zatrzymało kontenery frontendu i backendu z podglądu (Playwright reużywa porty 5173 i 8010, a kontenery miały stary kod), uruchomiło nowy ai-agent z drzewa głównego na porcie 8012 przeciw działającej Ollamie i przepuściło pełne suity na obu torach oraz oba specy AI na żywym modelu, dwukrotnie.</p>
+    <ul class="events">
+      <li><span class="time">13:28</span><span class="chip qa">qa</span><span class="msg">wip add ai-edit.spec.ts (slice D)<span class="hash">85afd21</span></span></li>
+      <li><span class="time">13:37</span><span class="chip review">reviewer</span><span class="msg">Zatwierdzone: siedem ustaleń i uwaga security naprawione, każde z testem, który pada na starym kodzie</span></li>
+      <li><span class="time">13:45</span><span class="chip qa">qa</span><span class="msg">fix stale AI-menu-trigger locator after a rename in ai-edit.spec.ts <em>· błąd w teście, nie w aplikacji: nazwa przycisku menu zmienia się razem z tytułem zadania</em><span class="hash">2c0b3af</span></span></li>
+      <li><span class="time">13:50</span><span class="chip qa">qa</span><span class="msg">PASS: 21/21 kryteriów, model trafny w zmianie nazwy, dodaniu podzadania i tagu, „delete this todo” → pusty zestaw w 5/5 przebiegach</span></li>
+      <li><span class="time">13:55</span><span class="chip lead">lead</span><span class="msg">Scalenie na <code>main</code> (<span class="mono">c352752</span>), usunięcie worktree, przebudowa podglądu z profilem <code>ai</code>, koniec pomiaru</span></li>
+    </ul>
+  </div>
+
+  <h2>Bramki jakości</h2>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Bramka</th><th>Werdykt</th><th>Znalezisko</th><th>Waga</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip review">security</span></td><td><span class="verdict ok">Approve</span></td><td>Pętla apply bez strażnika, że id operacji <code>remove</code> to nie id samego zadania (dziś nieosiągalne, serwer emituje tylko id podzadań); znaki kontrolne w instrukcji; brak horyzontu ±5 lat przy ponownym przycięciu daty w backendzie; tagi zapisywane jako pełna lista ze stanu z chwili podglądu</td><td><span class="verdict warn">niska ×1, info ×3</span></td></tr>
+        <tr><td><span class="chip review">reviewer</span> #1</td><td><span class="verdict bad">Changes</span></td><td>Cicho porzucone dodanie tagu przy limicie; testy pętli apply tylko dla tytułu, <code>reopen</code> nigdzie nie asertowane; licznik „Applied n of m” liczył operacje pominięte przez 404; niehaszowalne <code>action</code> od agenta dawało 500; brak delty w specu głównym; 404 przy dodaniu podzadania znaczy „rodzic zniknął”; dwie etykiety bez testów</td><td><span class="verdict bad">blokujące ×2</span>, niskie ×5</td></tr>
+        <tr><td><span class="chip review">reviewer</span> #2</td><td><span class="verdict ok">Approve</span></td><td>Wszystko naprawione; zgoda na odłożenie luk w starszej ścieżce <code>parse-todo</code> do backlogu</td><td>—</td></tr>
+        <tr><td><span class="chip qa">qa</span></td><td><span class="verdict ok">Pass</span></td><td>Bez błędów w aplikacji; jedna obserwacja: instrukcja „a” wprost do ai-agenta czasem daje <code>priority: medium</code>, co backend tłumi jako no-op (ryzyko R1 ze specu)</td><td><span class="verdict warn">info ×1</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Co powstało</h2>
+  <div class="cols">
+    <div>
+      <h3>Backend i ai-agent</h3>
+      <ul class="plain">
+        <li><code>POST /ai/edit-todo</code> w ai-agencie: migawka zadania z podzadaniami po pozycji, instrukcja i data; prompt z trzema przykładami few-shot i blokiem dat na końcu; schemat JSON ze stałymi kluczami i jedną jednorodną listą operacji zamiast pełnego obiektu zastępczego</li>
+        <li>Sanitizery po stronie agenta: pozycja jako liczba lub napis liczbowy w granicach migawki, priorytet nieznany → brak zmiany (nigdy „medium”), tagi w obu listach → w żadnej, dodanie podzadania o istniejącym tytule odrzucone</li>
+        <li><code>POST /api/ai/edit-todo</code> w backendzie pod tymi samymi strażnikami co pozostałe endpointy AI; 404 dla obcego, nieznanego i podrzędnego id; instrukcja przycinana do 500 znaków, znaki kontrolne zdejmowane</li>
+        <li>Rozwiązanie propozycji w zestaw zmian: pozycja→id z tego samego wycinka, który poszedł do modelu; tłumienie no-op dla każdego pola; limit 10 tagów po deduplikacji z odrzucaniem najpierw nowych; jedna operacja na podzadanie, <code>remove</code> wygrywa; kolejność rename → complete/reopen → remove → add</li>
+        <li>Klucz <code>from</code> na drucie przypięty testem po obu stronach; odporność na śmieciowe ciało od agenta (niehaszowalne wartości → <code>empty: true</code>)</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Frontend i testy</h3>
+      <ul class="plain">
+        <li>„Edit with AI” jako trzecia pozycja menu AI na karcie; panel z polem na 500 znaków, fokus w polu po otwarciu, powrót na przycisk menu po Cancel, Close i udanym zastosowaniu</li>
+        <li>Podgląd zmian z checkboxem na każdą pozycję: tytuł, opis, priorytet, termin, ukończenie, tagi dodane i usunięte, operacje na podzadaniach; nazwa dostępna checkboxa równa widocznej etykiecie; usunięcia czerwone i ze słowem „Remove”</li>
+        <li>Pętla apply: jeden PATCH ze wszystkimi polami, potem operacje na podzadaniach w kolejności z serwera; 404 na przestarzałym podzadaniu pomijane bez liczenia, 404 przy dodaniu zatrzymuje; „Applied n of m” z samym Close po awarii w środku; jedno ciche odświeżenie</li>
+        <li>Stały komunikat „nothing to change” dla instrukcji spoza zakresu; żadna proza modelu nie trafia na ekran</li>
+        <li>Nowy test E2E <code>ai-edit.spec.ts</code> (4 przypadki na żywym modelu): zmiana nazwy, podzadanie i tag, instrukcja spoza zakresu, Cancel z fokusem</li>
+        <li>Wiersze §6.6 i §8.2 w specu głównym iteracji 2 wskazujące na kontrakt iteracji 5</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Wynik testów na <code>main</code></h3>
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Suita</th><th>Komenda</th><th>Wynik</th></tr></thead>
+      <tbody>
+        <tr><td>Backend, tor SQLite</td><td class="num">cd backend && uv run pytest</td><td class="num">1 009 passed, 30 skipped</td></tr>
+        <tr><td>Backend, tor PostgreSQL</td><td class="num">TEST_DATABASE_URL=... uv run pytest</td><td class="num">1 038 passed, 1 skipped</td></tr>
+        <tr><td>ai-agent</td><td class="num">cd ai-agent && uv run pytest</td><td class="num">740 passed, 11 skipped; tor live: edycja 3/3, daty 5/5</td></tr>
+        <tr><td>Frontend, Vitest</td><td class="num">cd frontend && npx vitest run</td><td class="num">296 passed</td></tr>
+        <tr><td>E2E, Playwright</td><td class="num">npm run e2e · E2E_AI=1 ai-menu + ai-edit</td><td class="num">13 passed · 5 passed ×2</td></tr>
+        <tr class="total"><td>Razem</td><td></td><td class="num">2 063 testów, 0 failed</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Decyzje podjęte bez pytania</h2>
+  <ul class="plain">
+    <li><strong>Szkic do potwierdzenia, nie natychmiastowa edycja.</strong> Zgodnie z konwencją pozostałych funkcji AI model nic nie zapisuje; użytkownik widzi listę zmian z checkboxami i decyduje. Usunięcia są domyślnie zaznaczone, ale czerwone i podpisane słowem „Remove”.</li>
+    <li><strong>Pozycje zamiast identyfikatorów.</strong> Model dostaje podzadania jako listę 1..N; wskazanie nieistniejącego podzadania jest niemożliwe strukturalnie, a nie tylko odrzucane walidacją.</li>
+    <li><strong>Bez nowego endpointu zapisu.</strong> Frontend stosuje zmiany przez istniejące PATCH i endpointy podzadań, które już znają reguły SSE i liczników; cena to nieatomowe zastosowanie, stąd uczciwy komunikat „Applied n of m” bez ponawiania (ponowne <code>add</code> zdublowałoby podzadanie).</li>
+    <li><strong>Dodanie tagu ponad limit zostaje widoczne z wyjaśnieniem</strong> zamiast znikać po odznaczeniu innego wiersza; reviewer dopuszczał obie drogi, agent frontendu wybrał tę, która nie ukrywa, że zadanie jest na limicie.</li>
+    <li><strong>Re-review i QA równolegle</strong> po drugiej rundzie, bo poprawki były punktowe i pokryte testami; scalenie czekało na oba werdykty.</li>
+    <li><strong>Luki w <code>parse-todo</code> do backlogu.</strong> Agent backendu zauważył, że starsza ścieżka nie ma horyzontu daty ani filtrowania znaków kontrolnych; reviewer zgodził się, że poszerzanie zakresu na bramce byłoby złą wymianą.</li>
+  </ul>
+
+  <h2>Do wzięcia w iteracji 6</h2>
+  <ul class="plain">
+    <li>IT3-5: zdalne repozytorium i pierwszy przebieg CI na GitHubie, po podaniu adresu przez użytkownika.</li>
+    <li>IT5-8: „Edit with AI” także na wierszach podzadań (planner odłożył świadomie).</li>
+    <li>IT5-9: horyzont daty i znaki kontrolne na ścieżce <code>parse-todo</code>.</li>
+    <li>IT5-10: tag dodany w innej karcie między podglądem a zastosowaniem jest tracony, bo tagi idą jako pełna lista.</li>
+    <li>IT5-11: strażnik „instrukcja niezrozumiała” w promptcie, żeby nonsens nie dawał <code>priority: medium</code>.</li>
+    <li>Pozostałe niskie z iteracji 4: <code>LOG_LEVEL</code> w szablonach, daty względne „in N days”, cicha naprawa filtra tagów, blokada przy chybieniu cache zdrowia AI.</li>
+  </ul>
+
+  <h2>Jak uruchomić</h2>
+  <pre><code>docker compose --profile ai up -d --build     # http://localhost:5173, konto demo w DASHBOARD.md
+cd backend && uv run pytest
+cd ai-agent && uv run pytest
+cd frontend && npx vitest run && npm run build
+cd frontend && npm run e2e
+# edycja instrukcją na żywym modelu:
+E2E_AI=1 AI_ENABLED=true AI_AGENT_URL=... AI_AGENT_TOKEN=... npx playwright test e2e/ai-edit.spec.ts</code></pre>
+
+  <footer>
+    <p>Todo App, iteracja 5. Wygenerowano 10 września 2026 z historii repozytorium na gałęzi <span class="mono">main</span> (<span class="mono">c352752</span>).</p>
+    <p>Stan projektu: <span class="mono">DASHBOARD.md</span>. Spec: <span class="mono">docs/specs/iteration-5-ai-edit-by-instruction.md</span>. Poprzednie kroniki: <span class="mono">docs/reports/iteration-{1,2,3,4}-history.html</span>.</p>
+  </footer>
+</div>

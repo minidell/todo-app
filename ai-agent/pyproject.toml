@@ -1,0 +1,28 @@
+[project]
+name = "todo-ai-agent"
+version = "0.1.0"
+description = "Internal AI microservice for the todo app: Ollama prompting, validation and clamping"
+requires-python = ">=3.12"
+# Lower bounds are the versions this service was built and tested against, so a
+# resolution on another machine cannot silently fall back to an older API.
+# uv.lock is committed and is what CI and the image actually install.
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "httpx>=0.27",
+    "pydantic-settings>=2.4",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+filterwarnings = [
+    "error",
+    # starlette >=1.6 nudges towards httpx2; the pinned httpx works fine.
+    "ignore:Using `httpx` with `starlette.testclient` is deprecated:",
+]

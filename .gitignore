@@ -1,0 +1,32 @@
+/.claude/worktrees/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Node / frontend
+node_modules/
+dist/
+.vite/
+
+# Playwright
+playwright-report/
+/frontend/playwright-report/
+test-results/
+/frontend/e2e/.auth/
+
+# Local Postgres data (only relevant if a bind-mounted volume is ever used)
+/postgres-data/
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
+
+# Environment variables
+.env
+.env.*
+!.env.example
